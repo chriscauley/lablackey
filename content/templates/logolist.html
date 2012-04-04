@@ -1,0 +1,23 @@
+<style type="text/css">
+.{{ itemlist.context }} td {
+    width: {{ itemlist.column_percent }}%
+}
+</style>
+<div class="{{ itemlist.context }} itemlist">
+  <table style="width: 100%; text-align: center;">
+    <tr>
+      {% for i in itemlist.columnized_items %}
+      <td>{% if i.url %}
+	<a href="{{ i.url }}">
+	  <img src="{{ i.logo.url }}" alt="{{ i.name }}" /> {# image here! #}
+	</a>
+	{% else %}<img src="{{ i.logo.url }}" alt="{{ i.name }}" />{% endif %}
+      </td>
+      {% if forloop.counter|divisibleby:itemlist.column_number %}
+    </tr>
+    <tr>
+      {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+</div>

@@ -1,0 +1,35 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block extrastyle %}{% load adminmedia %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% admin_media_prefix %}css/login.css" />{% endblock %}
+
+{% block bodyclass %}login{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+{% if form.errors and not form.non_field_errors and not form.this_is_the_login_form.errors %}
+<p class="errornote">
+{% blocktrans count form.errors.items|length as counter %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+</p>
+{% endif %}
+
+{% if form.non_field_errors or form.this_is_the_login_form.errors %}
+{% for error in form.non_field_errors|add:form.this_is_the_login_form.errors %}
+<p class="errornote">
+    {{ error }}
+</p>
+{% endfor %}
+{% endif %}
+
+<div id="content-main">
+{% include "widgets/login-form.html" %}
+<script type="text/javascript">
+document.getElementById('id_username').focus()
+</script>
+</div>
+{% endblock %}

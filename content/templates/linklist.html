@@ -1,0 +1,6 @@
+<map class="{{ itemlist.context }} itemlist" id="the_map" name="the_map">
+  {% for i in itemlist.columnized_items %}
+  <area href="{{ i.url }}" coords="{{ i.description }}"
+	shape="rect" alt="{{ i.name|upper }}" title="{{ i.name|upper }}"></area>
+  {% endfor %}
+</map>

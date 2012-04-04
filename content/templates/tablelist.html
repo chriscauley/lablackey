@@ -1,0 +1,24 @@
+<style type="text/css">
+.{{ itemlist.context }} td {
+    width: {{ itemlist.column_percent|add:"-1" }}%;
+    padding: 0 2%;
+}
+</style>
+<div class="{{ itemlist.context }} itemlist">
+  <table style="width: 100%;">
+    <tr>
+      {% for i in itemlist.columnized_items %}
+      <td>{% if i.url %}
+        <a href="{{ i.url }}">
+	  {{ i.name }} {{ i.last_name }}
+        </a>
+        {% else %}{{ i.name }} {{ i.last_name }}{% endif %}
+      </td>
+      {% if forloop.counter|divisibleby:itemlist.column_number %}
+    </tr>
+    <tr>
+      {% endif %}
+      {% endfor %}
+    </tr>
+  </table>
+</div>

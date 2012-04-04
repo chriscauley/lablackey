@@ -1,0 +1,23 @@
+<style type="text/css">
+.{{ itemlist.context }} li {
+    width: {{ itemlist.column_percent|add:-1 }}%;
+    padding-right: 1%;
+}
+{% ifequal itemlist.listitem_set.count 0 %}
+.{{ itemlist.context }} {
+    display: none;
+}
+{% endifequal %}
+</style>
+<div class="{{ itemlist.context }} itemlist">
+  <ol>
+    {% for i in itemlist.columnized_items %}
+    <li>{% if i.url %}
+      <a href="{{ i.url }}">{{ i.name }} {% if i.last_name %}{{ i.last_name }}{%endif%}</a>
+      {% else %}{{ i.name }}
+      {% if i.last_name %}{{ i.last_name }}{% endif %}
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</div>

@@ -5,7 +5,7 @@ from PIL import Image
 import sorl.thumbnail
 
 class Photo(models.Model):
-    name = models.CharField(max_length=64)
+    title = models.CharField(max_length=64)
     src = sorl.thumbnail.ImageField(
         'Image', max_length=300,
         upload_to=settings.UPLOAD_DIR + '/photos/%Y-%m')
@@ -34,7 +34,7 @@ class Photo(models.Model):
     def url(self): return settings.MEDIA_URL + self.src.name
 
     def __unicode__(self):
-        return self.name
+        return self.title
 
     @property
     def thumbnail_img_128x128(self):

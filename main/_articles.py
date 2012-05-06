@@ -1,18 +1,14 @@
-"""
-used to rmap articles app
-not currently in play
-use by adding "from ._articles import *" in main.admin
-"""
 import logging
 
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from django import forms
-from content.admin_mixins import CKEditorMixin
+from lablackey.content.mixins import CKEditorMixin
 from articles.forms import ArticleAdminForm
+from articles.admin import ArticleAdmin
 from articles.models import Tag, Article, ArticleStatus, Attachment
-from .models import ArticlePhoto
+#from .models import ArticlePhoto # not implimented
 
 log = logging.getLogger('articles.admin')
 
@@ -23,12 +19,7 @@ class TagAdmin(admin.ModelAdmin):
     return obj.article_set.count()
   article_count.short_description = _('Applied To')
 
-"""class ArticleStatusAdmin(admin.ModelAdmin):
-  list_display = ('name', 'is_live')
-  list_filter = ('is_live',)
-  search_fields = ('name',)"""
-
-class ArticlePhotoForm(forms.ModelForm):
+"""class ArticlePhotoForm(forms.ModelForm):
   order = forms.IntegerField(widget=forms.HiddenInput)
   class Meta:
     model = ArticlePhoto
@@ -37,15 +28,14 @@ class ArticlePhotoInline(admin.TabularInline):
   model = ArticlePhoto
   form = ArticlePhotoForm
   fields = ("name","src","order")
-  sortable_field_name = "order"
+  sortable_field_name = "order" """
 
-class ArticleAdmin(CKEditorMixin,admin.ModelAdmin):
+class ArticleAdmin(CKEditorMixin,ArticleAdmin):
   list_display = ('title', 'status', 'author', 'publish_date')
   list_filter = ('author', 'status', 'is_active')
   list_per_page = 25
   search_fields = ('title', 'keywords', 'description', 'content')
   form = ArticleAdminForm
-  inlines = [ ArticlePhotoInline ]
 
   fieldsets = (
     (None,
@@ -68,8 +58,8 @@ class ArticleAdmin(CKEditorMixin,admin.ModelAdmin):
       'classes': ('collapse',)
     }),
   )
-
   filter_horizontal = ('tags', 'followup_for', 'related_articles')
+  """
   prepopulated_fields = {'slug': ('title',)}
 
   def tag_count(self, obj):
@@ -116,29 +106,8 @@ class ArticleAdmin(CKEditorMixin,admin.ModelAdmin):
 
     return actions
 
-  actions = [mark_active, mark_inactive]
+  actions = [mark_active, mark_inactive]"""
 
-  def save_model(self, request, obj, form, change):
-    """Set the article's author based on the logged in user and make sure at least one site is selected"""
-
-    try:
-      author = obj.author
-    except User.DoesNotExist:
-      obj.author = request.user
-
-    obj.save()
-
-    # this requires an Article object already
-    obj.do_auto_tag('default')
-    form.cleaned_data['tags'] += list(obj.tags.all())
-
-  def queryset(self, request):
-    """Limit the list of articles to article posted by this user unless they're a superuser"""
-
-    if request.user.is_superuser:
-      return self.model._default_manager.all()
-    else:
-      return self.model._default_manager.filter(author=request.user)
 
 admin.site.unregister(Tag)
 admin.site.register(Tag, TagAdmin)

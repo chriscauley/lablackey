@@ -3,9 +3,9 @@ Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
 For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
-CKEDITOR.plugins.addExternal('fontcolor','/site_media/static/ckeditor/plugins/fontcolor/',
+CKEDITOR.plugins.addExternal('fontcolor','/static/ckeditor/plugins/fontcolor/',
 			     'plugin.js');
-CKEDITOR.plugins.addExternal('photoframe','/site_media/static/ckeditor/plugins/photoframe/',
+CKEDITOR.plugins.addExternal('photoframe','/static/ckeditor/plugins/photoframe/',
 			     'plugin.js');
 
 CKEDITOR.editorConfig = function( config )

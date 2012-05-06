@@ -1,4 +1,5 @@
 from django.contrib import admin
+from ._articles import *
 
 class OrderedAdmin(admin.ModelAdmin):
   readonly_fields = ("order",)

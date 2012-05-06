@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django import forms
 from lablackey.content.models import Page,Copy, ListItem, ItemList, DesignImage
-from lablackey.content.admin_mixins import CKEditorMixin
+from lablackey.content.mixins import CKEditorMixin
 
 class PageContentModelAdmin(admin.ModelAdmin):
     exclude = ('context',)

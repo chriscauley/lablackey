@@ -1,0 +1,24 @@
+/*
+Created by Chris Cauley February 2012
+Creates default text in an input element when the element is empty.
+Requires any jquery
+
+Will be automatically applied to any $("input[data-default-text]")
+Applies the class "default-text" and replaces the value with [data-default-text] if blank.
+*/
+$(document).ready(function() {
+  function defaultFocus(that) {
+    if (that.value == that.dataDefaultText) {
+      that.value = "";
+      $(that).removeClass("default-text");
+    }
+  }
+  function defaultBlur(that) {
+    if (!that.value || that.value == that.dataDefaultText) {
+      that.value = that.dataDefaultText;
+      $(that).addClass("default-text");
+    }
+  }
+  $("input[data-default-text]").focus(defaultFocus).blur(defaultBlur);
+}
+

@@ -1,0 +1,144 @@
+@import "global.less";
+[type=submit] { cursor: pointer; }
+
+
+#gallery {
+  background: url(/site_media/static/images/sandy-bg.png);
+  min-height: 840px;
+  position: relative;
+  > a {
+    background: url(/site_media/static/images/camera.png) no-repeat 30px 30px;
+    color: @dark_blue;
+    display: block;
+    font-size: 15px;
+    height: 20px;
+    padding: 40px 85px;
+    text-transform: uppercase;
+  }
+  #top_img {
+    position: absolute;
+    right: 0;
+    top: 0;
+  }
+  > .top p { max-width: 375px; }
+}
+
+#gallery .gallery { /* used in multiple places */
+  font-size: 12px;
+  height: 560px;
+  left: 30px;
+  margin: 0 auto;
+  position: absolute;
+  width: 900px;
+  .img {
+    margin: 0 9px 18px 9px;
+    height: 162px;
+    width: 162px;
+  }
+  .name {
+    font-size: 11px;
+  }
+  .nav {
+    bottom: 0;
+    color: @dark_blue;
+    display: inline-block;
+    font-size: 14px;
+    position: absolute;
+    right: 10px;
+    word-spacing: 10px;
+    [href] {
+      color: #7b7979;
+    }
+  }
+}
+
+#photo_upload {
+  margin: 0 auto 20px;
+  width: 600px;
+  #photo_header {
+    display: block;
+    margin: 0 auto 20px;
+  }
+  .field {
+    min-height: 60px;
+    [type=text] {
+      color: white;
+      background-color: #bdbcbc;
+      border: none;
+      padding: 10px 25px;
+      width: 415px
+    }
+    #upload_button {
+      cursor: pointer;
+      display: inline-block;
+      height: 36px;
+      position: relative;
+      width: 210px;
+      vertical-align: top;
+      > * {
+	position: absolute;
+	top: 0;
+	left: 0;
+      }
+      [type=file] {
+	cursor: pointer;
+	height: 36px;
+	opacity: 0;
+	width:197px;
+	z-index: 10;
+      }
+      img {
+	z-index: 9;
+      }
+    }
+    label {
+      color: @light_blue;
+      display: inline-block;
+      vertical-align: middle;
+      width: 110px;
+    }
+    #photo_name {
+      display: none;
+      margin: 0 120px;
+    }
+    #take_a_photo {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    #take_a_photo_results img {
+      display: block;
+      margin: 20px auto 10px;
+      width: 300px;
+    }
+  }
+  .errorlist {
+    color: red;
+    font-size: 14px;
+    list-style: none;
+    margin: 0.5em;
+    padding-left: 120px;
+  }
+  #submit_media_upload {
+    background-color: @light_blue;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    letter-spacing: 1px;
+    margin: 20px 40px 0 80px;
+    padding: 4px 0;
+    text-align: center;
+    text-transform: uppercase;
+    width: 75px;
+  }
+}
+
+#captcha {
+  margin: 0 auto;
+  width: 444px;
+}
+
+.terms_link {
+  color: @dark_blue;
+  font-size: 14px;
+  text-decoration: underline;
+}

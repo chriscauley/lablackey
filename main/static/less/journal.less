@@ -1,0 +1,152 @@
+.slide-wrapper {
+  overflow: hidden;
+  position: relative;
+  > ol, > ul {
+    left: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 0;
+    > li { float: left; }
+  }
+}
+
+#journal .top img {
+  display: block;
+  margin: 0 70px;
+}
+
+#journal {
+  .prevnext {
+    height: 40px;
+    margin: 0 15px;
+    position: relative;
+    width: 930px;
+    > * {
+      position: absolute;
+      top: 10px;
+    }
+    > div { left: 362px; }
+    .prev { left: 0; }
+    .next { right: 0; }
+  }
+  > .prevnext {
+    border-bottom: 1px black solid;
+  }
+  .bottom .prevnext {
+    border-top: 1px black solid;
+  }
+}
+
+#journal {
+  background: url(/site_media/static/images/sandy-bg.png);
+  .wrapper {
+    height: 600px;
+    margin: 10px auto 0;
+    padding: 20px 0 0;
+    width: 900px;
+    .slide-wrapper;
+  }
+}
+
+#journal .wrapper > ul > li {
+  padding: 10px 20px 0 20px;
+  height: 600px;
+  width: 420px;
+  .date {
+    font-size: 13px;
+    color: #231f20;
+  }
+  h2 {
+    color: #2e59af;
+    font-size: 18px;
+    margin: .6em 0 1em;
+    span { font-size: 15px; }
+  }
+  .text {
+    h3 {
+      line-height: 1;
+      margin: 0;
+    }
+    color: #656263;
+    font-size: 12px;
+    line-height: 1.5;
+    height: 500px;
+    padding-right: 25px;
+    overflow-y: auto;
+  }
+}
+
+.slideshow {
+  color: #656263;
+  cursor: pointer;
+  float:left;
+  font-size: 14px;
+  margin-bottom: 20px;
+  padding: 15px 10px 0 0;
+  position: relative;
+  width: 200px;
+  .center {
+    position: absolute;
+    right: 50px;
+    top: 42%;
+    width: 100px;
+  }
+  img {
+    width: 100%;
+    height: auto;
+  }
+  div { display: none; }
+}
+
+#journal .social {
+  background-color: white;
+  border: 1px #7c8083 solid;
+  border-bottom-color: #d2d3d3;
+  border-right-color: #d2d3d3;
+  border-radius: 2px;
+  float: right;
+  padding: 4px 5px;
+  a {
+    display: inline-block;
+    line-height: 0;
+    padding: 0 4px;
+    vertical-align: middle;
+  }
+}
+
+.journal-post-mask {
+  position: fixed;
+  z-index: 3000;
+  background: black;
+  opacity: 0.85;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.journal-post-modal {
+  position: absolute;
+  z-index: 3100;
+  top: 25px;
+  left: 0;
+  right: 0;
+  margin: auto;
+
+  border: 1px solid black;
+  background-color: white;
+  width: 680px;
+  padding: 16px 24px;
+  .close-box {
+    position: absolute;
+    right: -12px;
+    top: -12px;
+  }
+}
+
+.slideshow .center {
+  right: 58px;
+  top: 50% !important;
+}

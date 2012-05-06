@@ -1,0 +1,144 @@
+@light_blue: #9bd6ec;
+@dark_blue: #2e59af;
+@header_gray: #4f4c4d;
+@body_gray: #393536;
+@light_gray: #bdbcbc;
+@black: #231f20;
+@white: #ffffff;
+
+body {
+  max-width: 680px;
+  padding: 0;
+  margin: 0;
+}
+
+div.journal-post-modal {
+  width: 716px;
+}
+
+.journal-post-form {
+  color: @header_gray;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  letter-spacing: 1px;
+  strong {
+    color: @dark_blue;
+    font-weight: normal;
+  }
+}
+
+.journal-post-header {
+  border-bottom: solid 2px;
+  border-bottom-color: @header_gray;
+  font-size: 18px;
+  margin: 0 20px 32px;
+  padding-bottom: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  img {
+    margin-top: 20px;
+  }
+}
+
+.signin-method {
+  text-align: center;
+}
+
+.journal-post-form table {
+  margin: 27px auto 0;
+}
+
+.journal-post-form th {
+  font-weight: normal;
+  text-align: left;
+  width: 170px;
+}
+
+.journal-post-form td {
+  [type=text], [type=password], input:-webkit-autofill {
+    color: @header_gray;
+    background-color: #d7d5d3 !important;
+    border: none;
+    font-size: 13px;
+    padding: 8px 10px;
+    width: 415px;
+  }
+}
+
+#required {
+  float: right;
+}
+
+.journal-post-submit {
+  float: right;
+  margin-top: 22px;
+}
+
+#clear {
+  background-color: @dark_blue;
+  color: white;
+  float: left;
+  font-size: 14px;
+  font-weight: normal;
+  margin-bottom: 30px;
+  margin-top: 22px;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  width: 194px;
+}
+
+.journal-post-edit.image-submit, .journal-post-submit.journal-post-finish.image-submit {
+  background: @dark_blue;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  font-family: 'Montserrat';
+  font-size: 14px;
+  font-weight: normal;
+  margin: 20px 60px 0;
+  padding: 3px 5px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.journal-images > * {
+  clear:both;
+  display: block;
+  margin-bottom: 5px;
+}
+
+#id_content {
+  max-height: 166px !important;
+  width: 425px;
+}
+
+#subscribe_form.inline {
+  background: @light_blue;
+  span {
+    color: @dark_blue;
+    display: block;
+    font-family: "Montserrat", sans-serif;
+    font-size: 16px;
+    margin-bottom: 15px;
+    width: 180px;
+  }
+  [type=text], [type=email] {
+    background-color: transparent !important;
+    border-bottom: 1px white solid !important;
+    border-left: lighten(@dark_blue,20%) solid 1px !important;
+    border-radius: 5px !important;
+    border-right: 1px white solid !important;
+    border-top: lighten(@dark_blue,20%) solid 1px !important;
+    color: white !important;
+    display: block !important;
+    padding: 5px 10px !important;
+    width: 240px !important;
+  }
+  input {
+    margin-bottom: 15px !important;
+  }
+  p { color: @dark_blue; font-size: 14px; }
+}

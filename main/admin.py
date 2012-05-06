@@ -8,3 +8,6 @@ class OrderedAdmin(admin.ModelAdmin):
 
 class OrderedInline(admin.ModelAdmin):
   sortable_field_name = "order"
+
+class SlugAdmin(admin.ModelAdmin):
+  prepopulated_fields = {"slug": ("title",)}

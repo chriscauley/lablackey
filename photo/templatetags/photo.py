@@ -25,4 +25,8 @@ def thumbnail (photo, size,opts={}):
   img = photo.src
   opts['crop'] = 'center'
   opts['upscale'] = True
+  try:
+    photo.src.path
+  except ValueError:
+    return '/media/default.png'
   return get_thumbnail(img,size, quality=95, **opts).url

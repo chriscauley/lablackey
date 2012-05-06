@@ -24,7 +24,7 @@ class Event(models.Model):
   schedule = models.ForeignKey(Schedule,null=True,blank=True)
   description = models.TextField(blank=True)
   def save(self,*args,**kwargs):
-    if not self.date:
+    if not self.date and self.schedule:
       self.date = self.schedule.date
     super(Event,self).save(*args,**kwargs)
 

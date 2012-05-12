@@ -1,8 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.template.defaultfilters import striptags
+from django.template.defaultfilters import striptags, truncatewords
 from PIL import Image
 from lablackey.db.models import SlugModel, OrderedModel
+from lablackey.photo.models import Photo
 #import sorl.thumbnail
 from django.conf import settings
 from django.core.files import File
@@ -10,10 +11,8 @@ from django.core.files import File
 context_help = "Refers to the location on the website. Please do not change."
 body_help = "Shift+enter adds a line-break, enter starts a new paragraph."
 
-class Page(models.Model):
-  name = models.CharField(max_length=32)
-  def __unicode__(self):
-    return self.name
+class Page(SlugModel):
+  pass
 
 class PageContentModel(models.Model):
   context = models.CharField(max_length=32,help_text=context_help)
@@ -48,12 +47,9 @@ class DesignImage(PageContentModel):
     upload_to = settings.UPLOAD_DIR + '/designphotos/',
     null=True,blank=True)
 
-class FlatPage(SlugModel):
-  pass
-
 class Section(OrderedModel,SlugModel):
   hide_title = models.BooleanField(default=False)
-  flatpage = models.ForeignKey(FlatPage)
+  page = models.ForeignKey(Page)
   body = models.TextField()
   adh = "Update description every time the body is changed."
   auto_description = models.BooleanField("Auto-update Description",default=False,help_text=adh)
@@ -66,8 +62,8 @@ class Section(OrderedModel,SlugModel):
   class Meta:
     ordering = ("order",)
 
-class FlatPageImage(OrderedModel):
-  flatpage = models.ForeignKey(FlatPage)
+class PageImage(OrderedModel):
+  page = models.ForeignKey(Page)
   photo = models.ForeignKey(Photo)
   caption_override = models.CharField(max_length=512,null=True,blank=True)
   caption = lambda self: self.caption_override or self.photo.caption

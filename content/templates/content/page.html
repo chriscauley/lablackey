@@ -1,0 +1,31 @@
+{% extends "base.html" %}{% load url from future %}{% load thumbnail %}
+{% block title %}{{ page.title }}{% endblock %}
+{% block content %}
+<div class="bluebar bg1"></div>
+<div id="page" class="{{ page.slug }}">
+  <div class="top">
+    <h1>{{ page.title }}</h1>
+  </div>
+  {% if page.pageimage_set.count %}
+  <div class="slides">
+    <div class="wrapper">
+      <ul>{% for image in page.pageimage_set.all %}
+	<li>
+	  {% thumbnail image.photo.crop "940x240" crop="center" as im %}
+	  <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" />
+	  {% endthumbnail %}
+	  {% if image.photo.credit %}<div class="credit">{{ image.photo.credit }}</div>{% endif %}
+	  {% if image.caption %}<em class="caption">{{ image.caption }}</em>{% endif %}
+	</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+  <div>
+    {% include "content/_sections.html" %}
+  </div>
+</div>
+<script type="text/javascript">
+slideshow = miniSlideShow($("#page .wrapper"),{wrap:true,timeout:6000});
+</script>
+{% endblock %}

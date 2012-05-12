@@ -1,0 +1,8 @@
+{% for section in page.section_set.all %}
+<div class="section section_{{ section.slug }}">
+  {% if not section.hide_title %}<h2>{{ section.title }}</h2>{% endif %}
+  <div class="body">
+    {{ section.body|safe }}
+  </div>
+</div>
+{% endfor %}

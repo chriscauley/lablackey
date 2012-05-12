@@ -23,12 +23,13 @@ def print_img(context,args=None):
       tn = DesignImage.objects.get_or_create(context="default")[0].src
   else:
     tn = get_thumbnail(img.src,opts.pop('size'),**opts)
-  attr = { 'src': tn.url,
-       'width': tn.width,
-       'height': tn.height,
-       'alt': img.alt_text,  #eventually should default to alt_text OR caption OR...
-       'class': context
-       }
+  attr = {
+    'src': tn.url,
+    'width': tn.width,
+    'height': tn.height,
+    'alt': img.alt_text,  #eventually should default to alt_text OR caption OR...
+    'class': context
+    }
   s = """<img src="%(src)s" width="%(width)s" height="%(height)s" alt="%(alt)s" class="%(class)s"/>"""%attr
   return s
 

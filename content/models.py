@@ -20,7 +20,7 @@ class PageContentModel(models.Model):
   name = models.CharField(max_length=256,null=True,blank=True)
   def save(self,*args,**kwargs):
     if not self.page:
-      self.page = Page.objects.get_or_create(name = self.context.split('-')[0])[0]
+      self.page = Page.objects.get_or_create(title = self.context.split('-')[0])[0]
     if not self.name:
       self.name = ' '.join(self.context.split('-')[1:])
     super(PageContentModel,self).save(*args,**kwargs)

@@ -59,6 +59,7 @@ class PageImageInline(admin.TabularInline):
 
 class SectionInline(CKEditorMixin,admin.StackedInline):
   model = Section
+  #verbose_name_plural = "Section on the page."
   fieldsets = (
     (None,
      {"fields":('page',"title",'hide_title',"body","order")}

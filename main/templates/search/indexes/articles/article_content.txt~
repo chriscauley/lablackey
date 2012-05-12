@@ -1,3 +1,0 @@
-{{ objects.title }}
-{{ object.author.get_full_name }}
-{{ object.content|striptags }}

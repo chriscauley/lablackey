@@ -1,3 +1,0 @@
-[type=file] {
- filter: alpha(opacity = 0);
-}

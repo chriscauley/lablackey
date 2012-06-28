@@ -1,13 +1,29 @@
-from django.template.response import TemplateResponse
-from django.shortcuts import get_object_or_404
+from django.http import (
+    HttpResponse, HttpResponseForbidden, HttpResponseServerError)
+from django.template import RequestContext
+from django.shortcuts import render_to_response
 
-from .models import Page
+from event.models import Event
 
-def page(request,slug):
-  if request.user.is_superuser:
-    defaults = { 'title': slug.replace('-',' ').title() }
-    Page.objects.get_or_create(slug=slug,defaults=defaults)
-  values = {
-    "page": get_object_or_404(Page, slug=slug),
-  }
-  return TemplateResponse(request,"content/page.html",values)
+
+def monitoring_test(request):
+    # Never cache this view.
+    Event.objects.order_by()[0]
+    return HttpResponse('<html><body>working</body></html>')
+
+
+def always_500_error(request):
+    """Useful for testing no-ip.com monitoring failover."""
+    return HttpResponseServerError('Monitoring test page. Always fail.')
+
+
+def always_403_forbidden(request):
+    """Useful for testing no-ip.com monitoring failover."""
+    return HttpResponseForbidden('Monitoring test page. Always forbidden.')
+
+
+def gps_redirect(request):
+    return render_to_response(
+        'content/gps_redirect.html',
+        dict(),
+        context_instance=RequestContext(request))

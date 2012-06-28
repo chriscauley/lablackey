@@ -1,5 +1,5 @@
 from django import template
-from django.conf import settings
+
 from sorl.thumbnail import get_thumbnail
 
 register = template.Library()
@@ -18,15 +18,5 @@ def nocrop_thumbnail (photo, size,opts={}):
     rsize = (rsize[0],int(rsize[0]/ratio))
   else:
     rsize = (int(rsize[1]*ratio),rsize[1])
-  return get_thumbnail(img,'%sx%s'%rsize, quality=95, **opts).url
+  return get_thumbnail(img, '%sx%s'%rsize, quality=95, opts=opts)    
 
-@register.filter
-def thumbnail (photo, size,opts={}):
-  img = photo.src
-  opts['crop'] = 'center'
-  opts['upscale'] = True
-  try:
-    photo.src.path
-  except ValueError:
-    return '/media/default.png'
-  return get_thumbnail(img,size, quality=95, **opts).url

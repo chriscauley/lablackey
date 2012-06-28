@@ -1,13 +1,20 @@
 from django.contrib import admin
-from ._articles import *
+from django.db import models
+from django.forms.widgets import HiddenInput
 
-class OrderedAdmin(admin.ModelAdmin):
-  readonly_fields = ("order",)
+class OrderedModelAdmin(admin.ModelAdmin):
+  exclude = ("order",)
   list_editable = ("order",)
-  list_display = ("__str__","order")
+  list_display = ("__unicode__","order")
 
-class OrderedInline(admin.ModelAdmin):
+class OrderedModelInline(admin.TabularInline):
+  formfield_overrides = {
+    models.PositiveIntegerField: {'widget': HiddenInput},
+    }
   sortable_field_name = "order"
 
-class SlugAdmin(admin.ModelAdmin):
+class SlugModelAdmin(admin.ModelAdmin):
   prepopulated_fields = {"slug": ("title",)}
+
+class ColumnModelAdmin(admin.ModelAdmin):
+  list_filter = ('column',)

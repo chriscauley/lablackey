@@ -1,22 +1,19 @@
-from django.contrib.auth.models import User
 from django.db import models
-from django.conf import settings
-from PIL import Image
-import sorl.thumbnail
+from sorl.thumbnail import ImageField, get_thumbnail
+from mwm.db.models import OrderedModel
 
 class Photo(models.Model):
-    title = models.CharField(max_length=64)
-    src = sorl.thumbnail.ImageField('Image', max_length=300,upload_to='photos/%Y-%m')
-    uploader = models.ForeignKey(User, verbose_name="Uploaded By")
-    caption = models.CharField(max_length=256,null=True,blank=True)
+  name = models.CharField(max_length=512)
+  src = ImageField(upload_to='uploads/photos/%Y-%m',max_length=300)
 
-    __unicode__ = lambda self: self.title
+  thumbnail = lambda self:'<img src="%s"/>'%(get_thumbnail(self.src, '128x128').url)
+  thumbnail_link = lambda self: '<a target="_blank" href="%s">%s</a>'%(self.url,self.thumbnail)
+  __unicode__ = lambda self: self.name
 
-    @property
-    def thumbnail_img_128x128(self):
-        im = sorl.thumbnail.get_thumbnail(self.src, '128x128', quality=70)
-        return '<img src="%s"/>' % (im.url,)
-
-    @property
-    def thumbnail_link_128x128(self):
-        return '<a target="_blank" href="%s">%s</a>' % (self.url, self.thumbnail_img_128x128)
+class PhotoModel(OrderedModel):
+  photo = models.ForeignKey(Photo)
+  slide_dimensions = "100x100"
+  large_dimensions = "900x900"
+  __unicode__ = lambda self: str(self.photo)
+  class Meta:
+    abstract = True

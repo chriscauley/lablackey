@@ -1,4 +1,5 @@
 from django.db import models
+from django.template.defaultfilters import slugify
 
 class OrderedModel(models.Model):
   order = models.PositiveIntegerField(default=99999)
@@ -15,6 +16,11 @@ class SlugModel(models.Model):
   title = models.CharField(max_length=128)
   __unicode__ = lambda self: self.title
   slug = models.CharField(max_length=128,null=True,blank=True,unique=True)
+  def save(self,*args,**kwargs):
+    self.slug = slugify(self.title)
+    if self.__class__.objects.filter(slug=self.slug).exclude(id=self.id):
+      self.slug += "-%s"%self.id
+    return super(SlugModel,self).save(*args,**kwargs)
   class Meta:
     abstract = True
 

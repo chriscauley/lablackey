@@ -1,12 +1,12 @@
 from django.contrib import admin
 from .models import Page, Copy, DesignImage, HouseAd, Template, SideBarWidget
-from mwm.db.admin import OrderedModelInline
+from lablackey.db.admin import OrderedModelInline
 
 class PageContentInline(admin.TabularInline):
   exclude = ('context',)
-  readonly_fields = ('name',)
+  #readonly_fields = ('name',)
   has_add_permission = lambda self, request: False
-  has_delete_permission = lambda self, request, obj: request.user.is_superuser
+  #has_delete_permission = lambda self, request, obj: request.user.is_superuser
 
 class CopyInline(PageContentInline):
   fields = ('name','text')

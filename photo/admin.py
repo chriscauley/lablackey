@@ -1,8 +1,9 @@
 from django.contrib import admin
-from mwm.db.admin import OrderedModelInline
-from mwm.photo.models import Photo
+from lablackey.db.admin import OrderedModelInline
+from lablackey.photo.models import Photo
+from crop_override.admin import CropAdmin
 
-class PhotoAdmin(admin.ModelAdmin):
+class PhotoAdmin(CropAdmin):
   list_display = ('name', 'thumbnail_')
   thumbnail_ = lambda self, photo: photo.thumbnail()
   thumbnail_.allow_tags = True

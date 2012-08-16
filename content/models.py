@@ -2,7 +2,7 @@ from django.db import models
 from django.template.defaultfilters import striptags
 from PIL import Image
 from sorl.thumbnail import ImageField
-from mwm.db.models import OrderedModel
+from lablackey.db.models import OrderedModel
 
 context_help = "Refers to the location on the website. Please do not change."
 body_help = "Shift+enter adds a line-break, enter starts a new paragraph."

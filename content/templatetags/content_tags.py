@@ -2,7 +2,7 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
 from sorl.thumbnail import get_thumbnail
-from mwm.content.models import Copy, DesignImage
+from lablackey.content.models import Copy, DesignImage
 try:
   from settings.content_defaults import copy_defaults
 except ImportError:
@@ -30,7 +30,7 @@ def print_img(context,size=None,crop='center',upscale=True,quality=95,url=False)
     if url:
       return ''
     return '<img width="%s" height="%s">' % (width, height)
-  if not size:
+  if not width:
     tn = img.src
   else:
     tn = get_thumbnail(img.src,size,crop=crop,upscale=upscale,quality=quality)

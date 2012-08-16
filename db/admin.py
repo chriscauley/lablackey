@@ -12,9 +12,13 @@ class OrderedModelInline(admin.TabularInline):
     models.PositiveIntegerField: {'widget': HiddenInput},
     }
   sortable_field_name = "order"
+  extra = 0
 
 class SlugModelAdmin(admin.ModelAdmin):
-  prepopulated_fields = {"slug": ("title",)}
+  exclude = ("slug",)
+
+class SlugModelInline(admin.TabularInline):
+  exclude = ("slug",)
 
 class ColumnModelAdmin(admin.ModelAdmin):
   list_filter = ('column',)

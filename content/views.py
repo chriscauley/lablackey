@@ -3,7 +3,7 @@ from django.http import (
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 
-from event.models import Event
+from lablackey.event.models import Event
 
 
 def monitoring_test(request):

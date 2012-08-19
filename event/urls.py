@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns(
-  'event.views',
+  'lablackey.event.views',
   url(r'^$', 'index', name="index"),
   #url(r'weekly/(\d+\-\d+\-\d+)/',"weekly",name="weekly"),
   #url(r'weekly/(\d+\-\d+\-\d+)/(?P<page_number>\d+)/',"weekly",name="weekly"),

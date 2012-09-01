@@ -4,7 +4,7 @@ from lablackey.photo.models import Photo
 from crop_override.admin import CropAdmin
 
 class PhotoAdmin(CropAdmin):
-  list_display = ('name', 'thumbnail_')
+  list_display = ('name',)# 'thumbnail_')
   thumbnail_ = lambda self, photo: photo.thumbnail()
   thumbnail_.allow_tags = True
 

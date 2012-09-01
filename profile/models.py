@@ -11,6 +11,7 @@ class ProfileModel(models.Model):
   user = models.OneToOneField(User)
   ghandle = models.CharField(max_length=256,null=True,blank=True)
   objects = ProfileManager()
+  __unicode__ = lambda self: "%s's Profile"%self.user
   class Meta:
     abstract = True
 

@@ -10,3 +10,11 @@ def cached_method (target):
     return getattr(obj, name)
   
   return wrapper
+
+from django.contrib.auth.forms import PasswordResetForm
+
+def reset_password(user,email_template_name='registration/password_reset_email.html',):
+  form = PasswordResetForm({'email':user.email})
+  if form.is_valid():
+    form.save(email_template_name=email_template_name)
+

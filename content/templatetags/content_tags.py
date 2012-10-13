@@ -7,14 +7,14 @@ from lablackey.content.models import Copy, DesignImage, TextArea
 register = template.Library()
 
 @register.filter
-def print_copy(context, default_text=None):
+def print_copy(context, default_text='change me'):
   defaults = {'text': default_text}
   c,new = Copy.objects.get_or_create(context=context, defaults=defaults)
   return mark_safe(c.text)
 print_copy.is_safe=True
 
 @register.filter
-def print_text(context, default_text=None):
+def print_text(context, default_text='change me'):
   defaults = {'text': default_text}
   c,new = TextArea.objects.get_or_create(context=context, defaults=defaults)
   return mark_safe(c.text)

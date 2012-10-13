@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Page, Copy, DesignImage, HouseAd, Template, SideBarWidget
+from .models import Page, Copy, DesignImage, HouseAd, Template, SideBarWidget, TextArea
 from lablackey.db.admin import OrderedModelInline
 
 class PageContentInline(admin.TabularInline):
@@ -11,6 +11,10 @@ class PageContentInline(admin.TabularInline):
 class CopyInline(PageContentInline):
   fields = ('name','text')
   model = Copy
+
+class TextAreaInline(PageContentInline):
+  fields = ('name','text')
+  model = TextArea
 
 class DesignImageInline(PageContentInline):
   fields = ('src','name')
@@ -29,7 +33,7 @@ class SideBarWidgetInline(OrderedModelInline):
 
 class PageAdmin(admin.ModelAdmin):
   readonly_fields = ('name',)
-  inlines = [CopyInline,DesignImageInline,HouseAdInline,SideBarWidgetInline]
+  inlines = [CopyInline,DesignImageInline,TextAreaInline] #,HouseAdInline,SideBarWidgetInline]
 
 admin.site.register(Page,PageAdmin)
 admin.site.register(Template,TemplateAdmin)

@@ -43,7 +43,6 @@ class Copy(PageContentModel):
 class TextArea(PageContentModel):
   text = models.TextField(help_text=body_help,default="change me")
   class Meta:
-    verbose_name_plural = "Copy"
     ordering = ("context",)
 
 class DesignImage(PageContentModel):

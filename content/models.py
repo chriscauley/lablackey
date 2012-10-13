@@ -35,7 +35,13 @@ class PageContentModel(PageItemModel):
     abstract = True
 
 class Copy(PageContentModel):
-  text = models.CharField(max_length=1024,help_text=body_help,default="change me")
+  text = models.CharField(max_length=1024,default="change me")
+  class Meta:
+    verbose_name_plural = "Copy"
+    ordering = ("context",)
+
+class TextArea(PageContentModel):
+  text = models.TextField(help_text=body_help,default="change me")
   class Meta:
     verbose_name_plural = "Copy"
     ordering = ("context",)

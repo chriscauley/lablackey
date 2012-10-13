@@ -2,23 +2,21 @@ from django import template
 from django.utils.safestring import mark_safe
 from django.template.loader import render_to_string
 from sorl.thumbnail import get_thumbnail
-from lablackey.content.models import Copy, DesignImage
-try:
-  from settings.content_defaults import copy_defaults
-except ImportError:
-  copy_defaults = {}
-
+from lablackey.content.models import Copy, DesignImage, TextArea
 
 register = template.Library()
 
 @register.filter
 def print_copy(context, default_text=None):
-  defaults = {}
-  if default_text:
-    defaults['text'] = default_text
-  elif context in copy_defaults:
-    defaults['text'] = copy_defaults[context]
+  defaults = {'text': default_text}
   c,new = Copy.objects.get_or_create(context=context, defaults=defaults)
+  return mark_safe(c.text)
+print_copy.is_safe=True
+
+@register.filter
+def print_text(context, default_text=None):
+  defaults = {'text': default_text}
+  c,new = TextArea.objects.get_or_create(context=context, defaults=defaults)
   return mark_safe(c.text)
 print_copy.is_safe=True
 

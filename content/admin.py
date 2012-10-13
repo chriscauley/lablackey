@@ -32,6 +32,7 @@ class SideBarWidgetInline(OrderedModelInline):
   extra = 0
 
 class PageAdmin(admin.ModelAdmin):
+  fields = ('name',)
   readonly_fields = ('name',)
   inlines = [CopyInline,DesignImageInline,TextAreaInline] #,HouseAdInline,SideBarWidgetInline]
 

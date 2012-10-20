@@ -19,3 +19,5 @@ class UserModel(models.Model):
   user = models.ForeignKey(User)
   class Meta:
     abstract = True
+
+User._meta.ordering=["username"]

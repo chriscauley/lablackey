@@ -41,7 +41,6 @@ var okListener = function(ev) {
 $(document).ready(function(){
   $("input,select").change(function(){
     $("iframe").remove();
-    console.log(makeIframe());
     $("#photo_cell").html(makeIframe());
   });
   window.parent.document.getElementsByClassName("cke_dialog_page_contents")[0].style.height="400px";

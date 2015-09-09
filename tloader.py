@@ -1,6 +1,6 @@
 import io
 from os.path import dirname, join, abspath
-from django.db.models import get_app
+from django.apps import apps
 from django.template import TemplateDoesNotExist
 from django.template.loaders.base import Loader as BaseLoader
 
@@ -15,7 +15,7 @@ class Loader(BaseLoader):
             raise TemplateDoesNotExist()
 
         app_name, template_name = template_parts
-        app_dir = dirname(get_app(app_name).__file__)
+        app_dir = apps.get_app_path(app_name)
         template_dir = abspath(join(app_dir, 'templates'))
 
         return join(template_dir, template_name)

@@ -6,6 +6,7 @@
 .inline-group .related-lookup { left: 85px; position: absolute; }
 
 @media (max-width: 1200px) {
+  /* left column now autohides */
   .suit-columns { padding-left: 20px; }
   #suit-left {
     background-color: white;
@@ -20,7 +21,10 @@
     left: 0;
     transition-delay: 0s;
   }
-  #wrap {
-    background: none;
-  }
+  #wrap { background: none; }
+
+  /* shrinking the save box */
+  .save-box .btn.btn-high,.save-box .btn.btn { width: 100%; }
+  .inner-two-columns .inner-right-column { width: 140px; }
+  .inner-two-columns .inner-center-column { margin-right: 150px; }
 }

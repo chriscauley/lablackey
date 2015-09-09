@@ -6,7 +6,7 @@
 .inline-group .related-lookup { left: 85px; position: absolute; }
 
 @media (max-width: 1200px) {
-  .suit-columns { padding-left: 40px; }
+  .suit-columns { padding-left: 20px; }
   #suit-left {
     background-color: white;
     box-shadow: 0 0 20px black;

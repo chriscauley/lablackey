@@ -1,0 +1,26 @@
+.tabular.inline-related textarea, .form-horizontal textarea {
+  width: 95% !important;
+}
+.form-horizontal .control-group .field-box .controls li { list-style: none; }
+.inline-group .form-row td { position: relative; }
+.inline-group .related-lookup { left: 85px; position: absolute; }
+
+@media (max-width: 1200px) {
+  .suit-columns { padding-left: 40px; }
+  #suit-left {
+    background-color: white;
+    box-shadow: 0 0 20px black;
+    left: -180px;
+    margin-left: 0;
+    position: absolute;
+    transition: 0.25s;
+    transition-delay: 0.5s;
+  }
+  #suit-left:hover {
+    left: 0;
+    transition-delay: 0s;
+  }
+  #wrap {
+    background: none;
+  }
+}

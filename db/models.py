@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.template.defaultfilters import slugify
 
@@ -9,6 +10,31 @@ class OrderedModel(models.Model):
       if self.__class__.objects.count():
         self.order = self.__class__.objects.order_by("-order")[0].order+1
     super(OrderedModel,self).save(*args,**kwargs)
+  class Meta:
+    abstract = True
+
+def to_base32(s):
+  key = '-abcdefghijklmnopqrstuvwxyz'
+  s = s.strip('0987654321')
+  return int("0x"+"".join([hex(key.find(i))[2:].zfill(2) for i in (slugify(s)+"----")[:4]]),16)
+
+class NamedTreeModel(models.Model):
+  name = models.CharField(max_length=64)
+  parent = models.ForeignKey("self",null=True,blank=True)
+  order = models.FloatField(default=0)
+  def get_order(self):
+    max_num = to_base32("zzzz")
+    if self.parent:
+      return to_base32(self.parent.name) + to_base32(self.name)/float(max_num)
+    return to_base32(self.name)
+  def save(self,*args,**kwargs):
+    self.order = self.get_order()
+    super(NamedTreeModel,self).save(*args,**kwargs)
+
+  def __unicode__(self):
+    if self.parent:
+      return "(%s) %s"%(self.parent,self.name)
+    return self.name
   class Meta:
     abstract = True
 
@@ -24,8 +50,7 @@ class SlugModel(models.Model):
   class Meta:
     abstract = True
 
-class ColumnModel(models.Model):
-  choices = (('right','right'),('left','left'))
-  column = models.CharField(max_length=8,choices=choices)
+class UserModel(models.Model):
+  user = models.ForeignKey(settings.AUTH_USER_MODEL)
   class Meta:
     abstract = True

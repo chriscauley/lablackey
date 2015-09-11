@@ -85,6 +85,14 @@ def reset_password(user,
   else:
     print form.errors
 
+def get_or_none(model,**kwargs):
+  try:
+    return model.objects.get(**kwargs)
+  except model.DoesNotExist:
+    return None
+  except model.MultipleObjectsReturned:
+    return model.objects.filter(**kwargs)[0]
+
 def latin1_to_ascii (unicrap):
   """This takes a UNICODE string and replaces Latin-1 characters with
     something equivalent in 7-bit ASCII. It returns a plain ASCII string. 

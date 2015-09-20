@@ -9,14 +9,19 @@ def send_template_email(template_name, recipients,
     recipients = [recipients]
   d = Context(context)
   preface = ''
+  bcc = []
   if experimental:
     from_email = 'chris@lablackey.com'
+    bcc = ['chris@lablackey.com']
     preface = "DISCLAMER: This is an automatic email with important information regarding your TXRX membership. If you believe you received this email in error, please reply and tell me why so I can correct the error.\n\n"
   msg = EmailMultiAlternatives(
     get_template('%s.subject'%template_name).render(d).strip(), # dat trailing linebreak
     preface+get_template('%s.txt'%template_name).render(d),
     from_email,
-    recipients)
+    recipients,
+    bcc=bcc
+  )
+  
   try:
     msg.attach_alternative(get_template('%s.html'%template_name).render(d), "text/html")
   except TemplateDoesNotExist:

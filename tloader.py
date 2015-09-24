@@ -15,7 +15,7 @@ class Loader(BaseLoader):
             raise TemplateDoesNotExist()
 
         app_name, template_name = template_parts
-        app_dir = apps.get_app_path(app_name)
+        app_dir = apps.get_app_config(app_name).path
         template_dir = abspath(join(app_dir, 'templates'))
 
         return join(template_dir, template_name)

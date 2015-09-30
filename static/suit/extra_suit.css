@@ -2,7 +2,7 @@
 .form-horizontal .control-group .field-box .controls li { list-style: none; }
 .inline-group .form-row td { position: relative; }
 .inline-group .related-lookup { left: 85px; position: absolute; }
-.vIntegerField { width: 50px; }
+[type=number],.vIntegerField { width: 50px; }
 select { width: auto; } /* bootstrap override */
 @media (max-width: 1200px) {
   /* left column now autohides */

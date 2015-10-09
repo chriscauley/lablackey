@@ -4,6 +4,7 @@
 .inline-group .related-lookup { left: 85px; position: absolute; }
 [type=number],.vIntegerField { width: 50px; }
 select { width: auto; } /* bootstrap override */
+select[multiple] { height: 300px; }
 @media (max-width: 1200px) {
   /* left column now autohides */
   .suit-columns { padding-left: 20px; }
@@ -27,4 +28,10 @@ select { width: auto; } /* bootstrap override */
   .save-box .btn.btn-high,.save-box .btn.btn { width: 100%; }
   .inner-two-columns .inner-right-column { width: 140px; }
   .inner-two-columns .inner-center-column { margin-right: 150px; }
+}
+
+/* mostly for the pop up */
+@media (max-width: 800px) {
+  .form-horizontal .control-group .controls .selector .selector-chooser { display:none; }
+  .form-horizontal .control-group .control-label { min-width: 80px; }
 }

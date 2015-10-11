@@ -3,6 +3,7 @@
 .inline-group .form-row td { position: relative; }
 .inline-group .related-lookup { left: 85px; position: absolute; }
 [type=number],.vIntegerField, #changelist-form .vIntegerField { width: 50px; }
+input[type=color] { height: 28px; padding: 0; width: 28px; }
 select { width: auto; } /* bootstrap override */
 select[multiple] { height: 300px; }
 @media (max-width: 1200px) {

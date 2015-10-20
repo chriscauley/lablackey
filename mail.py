@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives, send_mail
+from django.core.mail import EmailMultiAlternatives, send_mail, mail_admins
 from django.template.loader import get_template, TemplateDoesNotExist
 from django.template import Context
 from cStringIO import StringIO

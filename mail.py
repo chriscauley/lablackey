@@ -3,6 +3,8 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import get_template, TemplateDoesNotExist
 from django.template import Context
 
+import sys
+
 def send_template_email(template_name, recipients,
                         from_email=settings.DEFAULT_FROM_EMAIL, context={},experimental=True):
   if type(recipients) in [unicode,str]:

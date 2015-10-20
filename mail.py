@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import get_template, TemplateDoesNotExist
 from django.template import Context
+from cStringIO import StringIO
 
 def send_template_email(template_name, recipients,
                         from_email=settings.DEFAULT_FROM_EMAIL, context={},experimental=True):

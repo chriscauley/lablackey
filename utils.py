@@ -9,28 +9,6 @@ m = "You are not authorized to do this. If you believe this is in error, please 
 
 FORBIDDEN = HttpResponseForbidden(m)
 
-def mail_on_fail(target):
-  def wrapper(*args,**kwargs):
-    try:
-      return target(*args,**kwargs)
-    except Exception, err:
-      lines = [
-        "An unknown erro has occurred when executing the following function:",
-        "name: %s"%target.__name__,
-        "args: %s"%args,
-        "kwargs: %s"%kwargs,
-        "",
-        "traceback:\n%s"%traceback.format_exc(),
-        ]
-      mail_admins("Error occurred via 'mail_on_fail'",'\n'.join(lines))
-  return wrapper
-
-if False: #settings.DEBUG:
-  def mail_on_fail(target,*args,**kwargs):
-    def wrapper(*args,**kwargs):
-      return target(*args,**kwargs)
-    return wrapper
-
 def cached_method(target,name=None):
   target.__name__ = name or target.__name__
   if target.__name__ == "<lambda>":

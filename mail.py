@@ -4,7 +4,7 @@ from django.template.loader import get_template, TemplateDoesNotExist
 from django.template import Context
 from cStringIO import StringIO
 
-import sys
+import sys,traceback
 
 def send_template_email(template_name, recipients,
                         from_email=settings.DEFAULT_FROM_EMAIL, context={},experimental=True):
@@ -47,3 +47,19 @@ def print_to_mail(subject='Unnamed message',to=[settings.ADMINS[0][1]],notify_em
 
     return wrapper
   return wrap
+
+def mail_on_fail(target):
+  def wrapper(*args,**kwargs):
+    try:
+      return target(*args,**kwargs)
+    except Exception, err:
+      lines = [
+        "An unknown erro has occurred when executing the following function:",
+        "name: %s"%target.__name__,
+        "args: %s"%args,
+        "kwargs: %s"%kwargs,
+        "",
+        "traceback:\n%s"%traceback.format_exc(),
+        ]
+      mail_admins("Error occurred via 'mail_on_fail'",'\n'.join(lines))
+  return wrapper

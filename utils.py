@@ -1,13 +1,15 @@
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm
 from django.core.mail import mail_admins
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 
-import traceback
+import traceback, json
 
 m = "You are not authorized to do this. If you believe this is in error, please email %s"%settings.WEBMASTER
 
 FORBIDDEN = HttpResponseForbidden(m)
+
+JsonResponse = lambda data,*args,**kwargs: HttpResponse(json.dumps(data),*args,**kwargs)
 
 def cached_method(target,name=None):
   target.__name__ = name or target.__name__

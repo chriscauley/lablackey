@@ -5,7 +5,7 @@ from django.http import HttpResponseForbidden, HttpResponse
 
 import traceback, json
 
-m = "You are not authorized to do this. If you believe this is in error, please email %s"%settings.WEBMASTER
+m = "You are not authorized to do this. If you believe this is in error, please contact the webmaster."
 
 FORBIDDEN = HttpResponseForbidden(m)
 

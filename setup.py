@@ -1,8 +1,8 @@
 from distutils.core import setup
 setup(
   name = 'lablackey',
-  packages = ['lablackey'], # this must be the same as the name above
-  version = '0.1',
+  packages = {'lablackey':['*']}], # this must be the same as the name above
+  version = '0.1.0a',
   description = 'A collection of tools for django',
   author = 'Chris Cauley',
   author_email = 'chris@lablackey.com',

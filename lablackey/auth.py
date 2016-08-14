@@ -5,8 +5,8 @@ from .utils import get_or_none
 
 class EmailOrUsernameModelBackend(object):
   def authenticate(self, username=None, password=None):
-    user = get_or_none(get_user_model(),username=username)
-    user = user or get_or_none(get_user_model(),email=username)
+    user = get_or_none(get_user_model(),username__iexact=username)
+    user = user or get_or_none(get_user_model(),email__iexact=username)
     if user and user.check_password(password):
       return user
     return None

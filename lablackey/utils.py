@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.contenttypes.models import ContentType
 from django.core.mail import mail_admins
 from django.http import HttpResponseForbidden, HttpResponse
 
@@ -10,6 +11,10 @@ m = "You are not authorized to do this. If you believe this is in error, please 
 FORBIDDEN = HttpResponseForbidden(m)
 
 JsonResponse = lambda data,*args,**kwargs: HttpResponse(json.dumps(data),*args,**kwargs)
+
+def get_admin_url(self):
+  content_type = ContentType.objects.get_for_model(self.__class__)
+  return urlresolvers.reverse("admin:%s_%s_change" % (content_type.app_label, content_type.model), args=(self.id,))
 
 def cached_method(target,name=None):
   target.__name__ = name or target.__name__

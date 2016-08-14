@@ -1,5 +1,5 @@
 from django.contrib.auth import authenticate, login
-
+from django.http import HttpResponseRedirect
 from .utils import JsonResponse
 
 import json
@@ -12,3 +12,8 @@ def login_ajax(request):
     return JsonResponse({ 'errors': { 'non_field_errors': ['Username and password do not match.'] } })
   login(request,user)
   return JsonResponse({ 'user': {'id': user.id, 'username': user.username } })
+
+def logout(request):
+  from django.contrib.auth import logout
+  logout(request)
+  return HttpResponseRedirect("/")

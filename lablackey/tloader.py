@@ -12,7 +12,7 @@ class Loader(BaseLoader):
         template_parts = app_template_name.split(":", 1)
 
         if len(template_parts) != 2:
-            raise TemplateDoesNotExist()
+            raise TemplateDoesNotExist("Unable to find template %s"%app_template_name)
 
         app_name, template_name = template_parts
         app_dir = apps.get_app_config(app_name).path

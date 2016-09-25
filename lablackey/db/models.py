@@ -22,19 +22,18 @@ class NamedTreeModel(models.Model):
   name = models.CharField(max_length=64)
   parent = models.ForeignKey("self",null=True,blank=True)
   order = models.FloatField(default=0)
+  level = models.IntegerField(default=0)
   def get_order(self):
-    max_num = to_base32("zzzz")
     if self.parent:
-      return to_base32(self.parent.name) + to_base32(self.name)/float(max_num)
+      self.level = self.parent.level + 1
+      return to_base32(self.parent.name) + to_base32(self.name)/float(to_base32("zzzz"))
+    self.level = 0
     return to_base32(self.name)
   def save(self,*args,**kwargs):
     self.order = self.get_order()
     super(NamedTreeModel,self).save(*args,**kwargs)
 
-  def __unicode__(self):
-    if self.parent:
-      return "(%s) %s"%(self.parent,self.name)
-    return self.name
+  __unicode__ = lambda self: "(%s) %s"%(self.parent,self.name) if self.parent else self.name
   class Meta:
     abstract = True
 

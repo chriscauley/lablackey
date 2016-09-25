@@ -71,5 +71,5 @@ class SlugModelInline(RawMixin,admin.TabularInline):
   exclude = ("slug",)
 
 class NamedTreeModelAdmin(RawMixin,admin.ModelAdmin):
-  exclude = ('order',)
+  exclude = ('order','level')
 

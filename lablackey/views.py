@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login
-from django.http import HttpResponseRedirect
+from django.conf import settings
+from django.http import HttpResponseRedirect, HttpResponse
 from .utils import JsonResponse
 
 import json
@@ -17,3 +18,8 @@ def logout(request):
   from django.contrib.auth import logout
   logout(request)
   return HttpResponseRedirect("/")
+
+def robots(request):
+  if settings.DEBUG:
+    return HttpResponse("User-agent: *\nDisallow: /")
+  return HttpResponse("")

@@ -53,9 +53,17 @@ class RawMixin(object):
 
 class OrderedModelAdmin(RawMixin,admin.ModelAdmin):
   exclude = ("order",)
-  list_editable = ("order",)
-  list_display = ("__unicode__","order")
   readonly_fields = ('order',)
+  def get_list_display(self,request):
+    print dir(self)
+    list_display = super(OrderedModelAdmin,self).get_list_display(request)
+    if not "order" in list_display:
+      list_display = list(list_display) + ['order']
+    return list_display
+  def __init__(self,*args,**kwargs):
+    super(OrderedModelAdmin,self).__init__(*args,**kwargs)
+    if not "order" in self.list_editable:
+      self.list_editable = list(self.list_editable) + ['order']
 
 class OrderedModelInline(RawMixin,admin.TabularInline):
   formfield_overrides = {

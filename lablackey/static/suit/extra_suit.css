@@ -35,4 +35,11 @@ select[multiple] { height: 300px; }
 @media (max-width: 800px) {
   .form-horizontal .control-group .controls .selector .selector-chooser { display:none; }
   .form-horizontal .control-group .control-label { min-width: 80px; }
+  .inner-two-columns .inner-right-column {
+    float: none;
+    position: absolute;
+    right: 0;
+    top: initial;
+    z-index: 1;
+  }
 }

@@ -55,7 +55,6 @@ class OrderedModelAdmin(RawMixin,admin.ModelAdmin):
   exclude = ("order",)
   readonly_fields = ('order',)
   def get_list_display(self,request):
-    print dir(self)
     list_display = super(OrderedModelAdmin,self).get_list_display(request)
     if not "order" in list_display:
       list_display = list(list_display) + ['order']

@@ -1,10 +1,16 @@
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout as _logout, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.core.validators import validate_email
 from django.db.models import Q
 from django import forms
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.template.response import TemplateResponse
+
+from .forms import UserEmailForm
+from .unrest import model_to_schema
 
 import json, random
 
@@ -64,3 +70,18 @@ def register_ajax(request):
   user.backend='django.contrib.auth.backends.ModelBackend'
   login(request,user)
   return JsonResponse({'user': {'id': user.id, 'username': user.username, 'email': user.email } })
+
+@login_required
+def set_email(request):
+  form = UserEmailForm(request.POST or None,instance=request.user)
+  if form.is_valid():
+    form.save()
+    messages.success(request,"Your email has been set, thank you.")
+    return HttpResponseRedirect(request.POST.get("next","/"))
+  values = {'form': form,'huh': 1}
+  return TemplateResponse(request,"registration/set_email.html",values)
+
+def get_schema(request,app_name,model_name):
+  app = apps.get_app_config(app_name)
+  model = app.get_model(model_name)
+  return JsonResponse({'schema': {"%s_%s"%(app_name,model_name): model_to_schema(model) } })

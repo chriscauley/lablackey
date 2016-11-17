@@ -1,3 +1,4 @@
+.vLargeTextField { width: 95% }
 .tabular.inline-related textarea, .form-horizontal textarea { height: 100px; }
 .form-horizontal .control-group .field-box .controls li { list-style: none; }
 .inline-group .form-row td { position: relative; }

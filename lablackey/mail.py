@@ -2,22 +2,20 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives, send_mail, mail_admins
 from django.core.mail.backends.smtp import EmailBackend
 from django.template.loader import get_template, TemplateDoesNotExist
-from django.template import Context
+from django.template import Context, RequestContext
 from cStringIO import StringIO
 
 import sys,traceback
 
-def send_template_email(template_name, recipients,
-                        from_email=settings.DEFAULT_FROM_EMAIL, context={},experimental=True):
+def send_template_email(template_name, recipients, request=None,
+                        from_email=settings.DEFAULT_FROM_EMAIL, context={}):
   if type(recipients) in [unicode,str]:
     recipients = [recipients]
   d = Context(context)
+  if request:
+    d.update(RequestContext(request))
   preface = ''
   bcc = []
-  if experimental:
-    from_email = 'chris@lablackey.com'
-    bcc = ['chris@lablackey.com']
-    preface = "DISCLAMER: This is an automatic email with important information regarding your TXRX membership. If you believe you received this email in error, please reply and tell me why so I can correct the error.\n\n"
   msg = EmailMultiAlternatives(
     get_template('%s.subject'%template_name).render(d).strip(), # dat trailing linebreak
     preface+get_template('%s.txt'%template_name).render(d),
@@ -31,6 +29,7 @@ def send_template_email(template_name, recipients,
   except TemplateDoesNotExist:
     pass
   msg.send()
+  return msg
 
 def print_to_mail(subject='Unnamed message',to=[settings.ADMINS[0][1]],notify_empty=lambda:True):
   def wrap(target):

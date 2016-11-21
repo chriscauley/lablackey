@@ -21,7 +21,7 @@ def auth_required(func, **decorator_kwargs):
 def email_required(func):
   def wrap(request, *args, **kwargs):
     if not request.user.is_authenticated():
-      return auth_required(func)(request,game_name,pk,**kwargs)
+      return auth_required(func)(request,**kwargs)
     if not request.user.email:
       return HttpResponseRedirect("/set_email/?next=%s"%urllib2.quote(request.path))
     return func(request, *args, **kwargs)

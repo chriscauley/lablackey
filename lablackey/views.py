@@ -84,4 +84,4 @@ def set_email(request):
 def get_schema(request,app_name,model_name):
   app = apps.get_app_config(app_name)
   model = app.get_model(model_name)
-  return JsonResponse({'schema': {"%s_%s"%(app_name,model_name): model_to_schema(model) } })
+  return JsonResponse({'schema': model_to_schema(model) })

@@ -19,6 +19,9 @@ def model_to_schema(model):
     json['name'] = name
     if kwargs.get('null',False) or kwargs.get('blank',False):
       json['required'] = False
+    if kwargs.get("choices",None):
+      json['type'] = 'select'
+      json['choice_tuples'] = kwargs['choices']
     schema.append(json)
   return schema
     

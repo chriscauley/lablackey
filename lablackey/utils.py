@@ -6,6 +6,17 @@ from django.http import HttpResponseForbidden, HttpResponse
 
 import traceback, json
 
+from .decorators import cached_method as _cm, cached_property as _cp
+import warnings
+
+def cached_method(*args,**kwargs):
+  warnings.warn("Import cached_method from lablackey.decorators, not utils (%s)"%args[0])
+  return _cm(*args,**kwargs)
+
+def cached_property(*args,**kwargs):
+  warnings.warn("Import cached_property from lablackey.decorators, not utils (%s)"%args[0])
+  return _cp(*args,**kwargs)
+
 m = "You are not authorized to do this. If you believe this is in error, please contact the webmaster."
 
 FORBIDDEN = HttpResponseForbidden(m)
@@ -15,25 +26,6 @@ JsonResponse = lambda data,*args,**kwargs: HttpResponse(json.dumps(data),*args,*
 def get_admin_url(self):
   _meta = self._meta
   return reverse("admin:%s_%s_change"%(_meta.app_label, _meta.model_name), args=(self.id,))
-
-def cached_method(target,name=None):
-  target.__name__ = name or target.__name__
-  if target.__name__ == "<lambda>":
-    raise ValueError("Using lambda functions in cached_methods causes __name__ collisions.")
-  def wrapper(*args, **kwargs):
-    obj = args[0]
-    name = '___' + target.__name__
-
-    if not hasattr(obj, name):
-      value = target(*args, **kwargs)
-      setattr(obj, name, value)
-
-    return getattr(obj, name)
-  
-  return wrapper
-
-def cached_property(target,name=None):
-  return property(cached_method(target,name=name))
 
 def reset_password(user,
                    email_template_name='registration/password_reset_email.html',

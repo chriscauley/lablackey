@@ -5,31 +5,42 @@ from django.template.loader import get_template, TemplateDoesNotExist
 from django.template import Context, RequestContext
 from cStringIO import StringIO
 
-import sys,traceback
+import sys, traceback, markdown
+
+def render_template(name,context):
+  html = None
+  for ext in ['html','md']:
+    try:
+      html = get_template("%s.%s"%(name,ext)).render(context)
+      break
+    except TemplateDoesNotExist:
+      pass
+  if html and ext == 'md':
+    html = markdown.markdown(html,safe=True)
+  text = None
+  try:
+    text = get_template("%s.%s"%(name,ext)).render(context)
+  except TemplateDoesNotExist:
+    pass
+  return html,text
 
 def send_template_email(template_name, recipients, request=None,
                         from_email=settings.DEFAULT_FROM_EMAIL, context={}):
   if type(recipients) in [unicode,str]:
     recipients = [recipients]
-  d = Context(context)
-  if request:
-    d.update(RequestContext(request))
+  if not 'settings' in context:
+    context['settings'] = {a: getattr(settings,a,None) for a in getattr(settings,"PUBLIC_SETTINGS",['DEBUG'])}
   preface = ''
   bcc = []
-  msg = EmailMultiAlternatives(
-    get_template('%s.subject'%template_name).render(d).strip(), # dat trailing linebreak
-    preface+get_template('%s.txt'%template_name).render(d),
+  html,text = render_template(template_name,context)
+  send_mail(
+    get_template('%s.subject'%template_name).render(context).strip(), # dat trailing linebreak
+    text,
     from_email,
     recipients,
-    bcc=bcc
+    html_message=html
   )
-  
-  try:
-    msg.attach_alternative(get_template('%s.html'%template_name).render(d), "text/html")
-  except TemplateDoesNotExist:
-    pass
-  msg.send()
-  return msg
+  return html,text
 
 def print_to_mail(subject='Unnamed message',to=[settings.ADMINS[0][1]],notify_empty=lambda:True):
   def wrap(target):

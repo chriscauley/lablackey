@@ -12,7 +12,7 @@ FIELD_MAP = {
 def model_to_schema(model):
   schema = []
   exclude = getattr(model,"schema_exclude",[])
-  for field, fk_model in model._meta.get_fields_with_model():
+  for field in model._meta.get_fields():
     if isinstance(field,models.ManyToOneRel):
       continue
     name, path, args, kwargs = field.deconstruct()

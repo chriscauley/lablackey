@@ -14,9 +14,12 @@ from .unrest import model_to_schema
 
 import json, random
 
-def single_page_app(request,slug=None):
-  """ Load the base template and let the front end handle the rest."""
-  return TemplateResponse(request,'single_page_app.html',{'slug': slug})
+def single_page_app(request,*args,**kwargs):
+  """
+  Load the base template and let the front end handle the rest.
+  args and kwargs do nothing.
+  """
+  return TemplateResponse(request,'single_page_app.html',{'args':args,'kwargs':kwargs})
 
 def login_ajax(request):
   if not ('username' in request.POST and 'password' in request.POST):

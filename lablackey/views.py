@@ -33,7 +33,8 @@ def login_ajax(request):
 def user_json(request):
   user = request.user
   if user.is_authenticated():
-    return JsonResponse({ 'user': {'id': user.id, 'username': user.username, 'email': user.email } })
+    keys = ['id','username','email','is_superuser','is_staff']
+    return JsonResponse({ 'user': { k:getattr(user,k) for k in keys } })
   return JsonResponse({})
 
 def logout(request):

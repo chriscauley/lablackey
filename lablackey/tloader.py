@@ -2,7 +2,7 @@ import io
 from os.path import dirname, join, abspath
 from django.apps import apps
 from django.template import TemplateDoesNotExist
-from django.template.loaders.base import Loader as BaseLoader
+from django.template.loaders.app_directories import Loader as BaseLoader
 
 
 class Loader(BaseLoader):

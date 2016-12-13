@@ -13,5 +13,6 @@ def get_one(request,app_name,model_name,pk):
 
 def get_many(request,app_name,model_name):
   model = get_model(app_name,model_name)
-  objs = model.objects.all()
+  kwargs = {k: request.GET[k] for k in model.filter_fields if k in request.GET}
+  objs = model.objects.filter(**kwargs)
   return JsonResponse([o.as_json for o in objs],safe=False)

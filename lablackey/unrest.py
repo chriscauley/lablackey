@@ -29,14 +29,15 @@ def model_to_schema(model):
   return schema
     
 class JsonMixin(object):
-  json_fields = []
+  json_fields = ['pk']
+  filter_fields = []
   m2m_json_fields = []
   fk_json_fields = []
   _private_id = False
   @property
   def as_json(self):
     out = {}
-    if not self._private_id:
+    if not self._private_id and not 'pk' in self.json_fields:
       out['id'] = self.id
     for f in self.json_fields:
       out[f] = getattr(self,f)

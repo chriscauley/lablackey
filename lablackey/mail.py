@@ -9,9 +9,11 @@ import sys, traceback, markdown
 
 def render_template(name,context):
   html = None
+  tried = []
   for ext in ['html','md']:
     try:
       html = get_template("%s.%s"%(name,ext)).render(context)
+      tried.append("%s.%s"%(name,ext))
       break
     except TemplateDoesNotExist:
       pass
@@ -19,9 +21,12 @@ def render_template(name,context):
     html = markdown.markdown(html,safe=True)
   text = None
   try:
-    text = get_template("%s.%s"%(name,ext)).render(context)
+    text = get_template("%s.txt"%name).render(context)
+    tried.append("%s.%s"%(name,ext))
   except TemplateDoesNotExist:
     pass
+  if not html and not text:
+    raise TemplateDoesNotExist("Tried: %s"%tried)
   return html,text
 
 def send_template_email(template_name, recipients, request=None,

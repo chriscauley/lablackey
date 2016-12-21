@@ -92,7 +92,12 @@ class DebugBackend(EmailBackend):
     for message in email_messages:
       if not settings.EMAIL_SUBJECT_PREFIX in message.subject:
         message.subject = "%s%s"%(settings.EMAIL_SUBJECT_PREFIX,message.subject)
+      attrs = ['to','cc','bcc']
+      original = {a:getattr(message,a) for a in attrs}
       message.to = filter_emails(message.to) or [getattr(settings,'ALLOWED_EMAILS',[])[0]]
       message.cc = filter_emails(message.cc)
       message.bcc = filter_emails(message.bcc)
+      for a in attrs:
+        if getattr(message,a) != original[a]:
+          print "%s changed: %s \nfor %s"%(a,original[a],message.subject)
     return super(DebugBackend,self).send_messages(email_messages)

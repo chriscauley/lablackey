@@ -9,7 +9,7 @@ def get_model(app_name,model_name):
 def get_one(request,app_name,model_name,pk):
   model = get_model(app_name,model_name)
   obj = get_object_or_404(model,pk=pk)
-  if not obj.row_permissions(user):
+  if not obj.row_permissions(request.user):
     raise NotImplementedError
   return JsonResponse(obj.as_json)
 

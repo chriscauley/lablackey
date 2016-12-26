@@ -1,6 +1,68 @@
 from django.conf import settings
+from django.contrib.sessions.models import Session
 from django.db import models
 from django.template.defaultfilters import slugify
+
+def _prep_kwargs_with_auth(request,kwargs):
+  if request.user.is_authenticated():
+    kwargs['user'] = request.user
+  else:
+    if not request.session.exists(request.session.session_key):
+      request.session.create()
+    kwargs['session'] = Session.objects.get(session_key=request.session.session_key)
+  return kwargs
+
+class UserOrSessionMixin(object):
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True,related_name="user_%(app_label)s%(class)ss")
+  session = models.ForeignKey(Session,null=True,blank=True,related_name="user_%(app_label)s%(class)ss",
+                              on_delete=models.SET_NULL)
+  session_key = models.CharField(max_length=40,null=True,blank=True)
+
+  @classmethod
+  def get_or_create_from_request(clss,request,**kwargs):
+    obj = clss.get_or_init_from_request(request,**kwargs)
+    if not obj.pk:
+      obj.save()
+    return obj
+
+  @classmethod
+  def get_or_init_from_request(clss,request,**kwargs):
+    try:
+      return cls.get_from_request(request,**kwargs)
+    except clss.DoesNotExist:
+      pass
+
+    # need session or user
+    kwargs = _prep_kwargs_with_auth(request,kwargs)
+    defaults = kwargs.pop("defaults",{})
+
+    #can't make an object with an id, pk, or complex lookup
+    kwargs.pop("id","")
+    kwargs.pop("pk","")
+    for key in kwargs.items():
+      if "__" in key:
+        kwargs.pop(key,"")
+
+    obj = clss(**kwargs)
+    for k,v in defaults.items():
+      setattr(obj,k,v)
+    return obj
+
+  @classmethod
+  def get_from_request(clss,request,**kwargs):
+    if 'session_key' in request.GET and request.user.is_authenticated():
+      # a preexisting object needs to be moved from session to user
+      try:
+        obj = clss.objects.get(session_key=request.GET['session_key'])
+        obj.session_key = None
+        obj.user = request.user
+        obj.save()
+        return obj
+      except clss.DoesNotExist:
+        # probably already happened, move along
+        pass
+    kwargs = _prep_kwargs_with_auth(request,kwargs)
+    return clss.objects.get(**kwargs)
 
 class OrderedModel(models.Model):
   order = models.PositiveIntegerField(default=99999)

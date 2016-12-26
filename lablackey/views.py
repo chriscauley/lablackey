@@ -23,7 +23,7 @@ def single_page_app(request,*args,**kwargs):
 
 def login_ajax(request):
   if not ('username' in request.POST and 'password' in request.POST):
-    return JsonReponse({ 'error': ['Please enter username and password'] })
+    return JsonResponse({ 'error': ['Please enter username and password'] })
   user = authenticate(username=request.POST['username'],password=request.POST['password'])
   if not user:
     return JsonResponse({ 'error': ['Username and password do not match.'] })

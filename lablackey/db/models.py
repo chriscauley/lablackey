@@ -28,7 +28,7 @@ class UserOrSessionMixin(object):
   @classmethod
   def get_or_init_from_request(clss,request,**kwargs):
     try:
-      return cls.get_from_request(request,**kwargs)
+      return clss.get_from_request(request,**kwargs)
     except clss.DoesNotExist:
       pass
 

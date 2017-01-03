@@ -30,21 +30,23 @@ def render_template(name,context):
   return html,text
 
 def send_template_email(template_name, recipients, request=None,
-                        from_email=settings.DEFAULT_FROM_EMAIL, context={}):
+                        from_email=settings.DEFAULT_FROM_EMAIL, context={},bcc=[]):
   if type(recipients) in [unicode,str]:
     recipients = [recipients]
   if not 'settings' in context:
     context['settings'] = {a: getattr(settings,a,None) for a in getattr(settings,"PUBLIC_SETTINGS",['DEBUG'])}
   preface = ''
-  bcc = []
   html,text = render_template(template_name,context)
-  send_mail(
+  msg = EmailMultiAlternatives(
     get_template('%s.subject'%template_name).render(context).strip(), # dat trailing linebreak
     text,
     from_email,
     recipients,
-    html_message=html
+    bcc=bcc,
   )
+  if html:
+    msg.attach_alternative(html, "text/html")
+  msg.send()
   return html,text
 
 def print_to_mail(subject='Unnamed message',to=[settings.ADMINS[0][1]],notify_empty=lambda:True):

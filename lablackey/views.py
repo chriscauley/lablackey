@@ -21,6 +21,9 @@ def single_page_app(request,*args,**kwargs):
   """
   return TemplateResponse(request,'single_page_app.html',{'args':args,'kwargs':kwargs})
 
+def render_template(request,*args,**kwargs):
+  return TemplateResponse(request,kwargs['template'],kwargs)
+
 def login_ajax(request):
   if not ('username' in request.POST and 'password' in request.POST):
     return JsonResponse({ 'error': ['Please enter username and password'] })

@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
   name = 'lablackey',
   packages = ['lablackey','lablackey.db'], # this must be the same as the name above
-  version = '0.1.2a',
+  version = '0.1.3',
   description = 'A collection of tools for django',
   author = 'Chris Cauley',
   author_email = 'chris@lablackey.com',

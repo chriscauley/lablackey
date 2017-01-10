@@ -89,7 +89,7 @@ def filter_emails(emails):
 
 class DebugBackend(EmailBackend):
   def send_messages(self,email_messages):
-    if not settings.DEBUG:
+    if not settings.DEBUG and not getattr(settings,"DEBUG_EMAIL",False):
       return super(DebugBackend,self).send_messages(email_messages)
     for message in email_messages:
       if not settings.EMAIL_SUBJECT_PREFIX in message.subject:

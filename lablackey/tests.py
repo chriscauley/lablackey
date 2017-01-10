@@ -25,6 +25,9 @@ def check_recipients(recipients,outbox=None):
   return _check(recipients,outbox_recipients)
 
 class ClientTestCase(TestCase):
+  """
+  A TestCase with added functionality such as user/object creationg, login/logout.
+  """
   _passwords = {}
   def login(self,username,password=None):
     if isinstance(username,get_user_model()):

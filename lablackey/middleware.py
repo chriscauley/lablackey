@@ -60,6 +60,7 @@ class LoggingMiddleware(object):
                 sql_log = " ({0} SQL queries, {1} ms)".format(
                     len(connection.queries), round(sql_time,2)
                 )
+                print sql_log
 
             bad_request_note = ''
             status_string = str(response.status_code)

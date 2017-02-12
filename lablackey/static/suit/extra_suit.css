@@ -46,8 +46,13 @@ select[multiple] { height: 300px; }
 }
 
 /* clock icon stopped working, not sure why */
-.datetime .datetimeshortcuts .date-icon,.datetime .datetimeshortcuts .clock-icon {text-indent:200%;white-space:nowrap;overflow:hidden;width:14px;height:14px;background-image:url("../suit/bootstrap/img/glyphicons-halflings.png");background-position:0 -96px;background-repeat:no-repeat;opacity:.6;margin:0;background-color:#F6F7F8;display:inline-block;vertical-align:middle}
-.datetime>div:not(.input-append) .datetimeshortcuts .date-icon:hover,.datetime>div:not(.input-append) .datetimeshortcuts .clock-icon:hover{opacity:1}
+.date-icon,
+.clock-icon,
+.datetime .datetimeshortcuts .date-icon,
+.datetime .datetimeshortcuts .clock-icon {text-indent:200%;white-space:nowrap;overflow:hidden;width:14px;height:14px;background-image:url("../suit/bootstrap/img/glyphicons-halflings.png");background-position:0 -96px;background-repeat:no-repeat;opacity:.6;margin:0;background-color:#F6F7F8;display:inline-block;vertical-align:middle}
+.date-icon,
 .datetime .datetimeshortcuts .date-icon {background-position:-192px -120px}
+.clock-icon,
 .datetime .datetimeshortcuts .clock-icon{text-indent:200%;white-space:nowrap;overflow:hidden;display:inline-block;width:14px;height:14px;background-image:url("../suit/bootstrap/img/glyphicons-halflings.png");background-position:0 -96px;background-repeat:no-repeat;opacity:.6;margin:0;background-position:-48px -24px}
-.datetime .datetimeshortcuts .clock-icon:hover{opacity:1}
+.date-icon:hover,
+.clock-icon:hover{opacity:1 !important;}

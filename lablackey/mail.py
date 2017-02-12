@@ -6,6 +6,7 @@ from django.template import Context, RequestContext
 from cStringIO import StringIO
 
 import sys, traceback, markdown
+import html2text
 
 def render_template(name,context):
   html = None
@@ -27,6 +28,8 @@ def render_template(name,context):
     pass
   if not html and not text:
     raise TemplateDoesNotExist("Tried: %s"%tried)
+  if not text:
+    text = html2text.html2text(html)
   return html,text
 
 def send_template_email(template_name, recipients, request=None,
@@ -102,4 +105,5 @@ class DebugBackend(EmailBackend):
       for a in attrs:
         if getattr(message,a) != original[a]:
           print "%s changed: %s \nfor %s"%(a,original[a],message.subject)
+    print "final to: ",message.to
     return super(DebugBackend,self).send_messages(email_messages)

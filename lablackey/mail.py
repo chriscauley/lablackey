@@ -19,7 +19,7 @@ def render_template(name,context):
     except TemplateDoesNotExist:
       pass
   if html and ext == 'md':
-    html = markdown.markdown(html,safe=True)
+    html = markdown.markdown(html, extensions=['lablackey.mdx_urlize'], safe_mode=True)
   text = None
   try:
     text = get_template("%s.txt"%name).render(context)
@@ -29,7 +29,9 @@ def render_template(name,context):
   if not html and not text:
     raise TemplateDoesNotExist("Tried: %s"%tried)
   if not text:
-    text = html2text.html2text(html)
+    _h = html2text.HTML2Text()
+    _h.body_width=0
+    text = _h.handle(html)
   return html,text
 
 def send_template_email(template_name, recipients, request=None,

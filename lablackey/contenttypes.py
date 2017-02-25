@@ -1,3 +1,4 @@
+from django.db import models
 from django.contrib.contenttypes.models import ContentType
 
 import six
@@ -13,4 +14,4 @@ class CTCache(object):
       self.lookup[obj] = ContentType.objects.get_by_natural_key(*obj.split("."))
     return self.lookup[obj]
 
-get_content_type = CTCache().get
+get_contenttype = CTCache().get

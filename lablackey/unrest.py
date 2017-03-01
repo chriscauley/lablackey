@@ -34,11 +34,16 @@ class JsonMixin(object):
   m2m_json_fields = []
   fk_json_fields = []
   _private_id = False
+  table_permission = None
+  row_permissions = None
+  # Row permissions and table permissions should be implemented as a classmethod and method. Like this
+  """
   @classmethod
   def table_permissions(cls,user):
     return True
   def row_permissions(self,user):
     return True
+  """
   @property
   def as_json(self):
     out = {}

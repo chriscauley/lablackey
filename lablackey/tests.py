@@ -43,7 +43,7 @@ class ClientTestCase(TestCase):
   def new_user(self,username=None,password=None,**kwargs):
     user = self._new_object(get_user_model(),username=username or "user_%s"%random.random(),**kwargs)
     self._passwords[user.username] = password = password or "%s"%random.random()
-    user.email = user.username+"@example.com"
+    user.email = user.username + ("" if "@" in user.username else "@example.com")
     user.set_password(password)
     user.save()
     return user

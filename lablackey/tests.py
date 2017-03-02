@@ -13,12 +13,14 @@ def _check(a,b):
   return success
 
 def check_subjects(subjects,outbox=None):
+  print "DEPRACATED! Use ClientTestCase.check_subjects instead!"
   if not outbox:
     outbox = mail.outbox
   outbox_subjects = [m.subject.replace(settings.EMAIL_SUBJECT_PREFIX,'') for m in outbox]
   return _check(subjects,outbox_subjects)
 
 def check_recipients(recipients,outbox=None):
+  print "DEPRACATED! Use ClientTestCase.check_recipients instead!"
   if not outbox:
     outbox = mail.outbox
   outbox_recipients = [m.recipients() for m in outbox]
@@ -47,3 +49,10 @@ class ClientTestCase(TestCase):
     user.set_password(password)
     user.save()
     return user
+  def check_subjects(self,subjects,outbox=None):
+    outbox = outbox or mail.outbox
+    subjects = [m.subject.replace(settings.EMAIL_SUBJECT_PREFIX,'') for m in outbox]
+    self.assertTrue(_check(subjects,subjects))
+  def check_recipients(self,recipients,outbox=None):
+    outbox = outbox or mail.outbox
+    self.assertTrue(_check(recipients,[m.recipients() for m in outbox]))

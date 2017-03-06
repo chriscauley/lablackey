@@ -35,10 +35,11 @@ class ClientTestCase(TestCase):
     if isinstance(username,get_user_model()):
       username = username.username
     user = get_user_model().objects.get(username=username)
-    if not user.check_password(password or self._passwords[username]):
+    _pw = self._passwords.get(username,"nope")
+    if not user.check_password(password or _pw):
       user.set_password(password)
       user.save()
-    self.client.post(reverse('login'),{'username': username,'password': password or self._passwords[username]})
+    self.client.post(reverse('login'),{'username': username,'password': password or _pw})
     return user
   def _new_object(self,model,**kwargs):
     return model.objects.create(**kwargs)

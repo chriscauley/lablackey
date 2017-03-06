@@ -11,7 +11,7 @@ def get_one(request,app_name,model_name,pk):
   if model.table_permissions and not model.table_permissions(request.user):
     raise NotImplementedError
   obj = get_object_or_404(model,pk=pk)
-  if obj.row_permission and not obj.row_permissions(request.user):
+  if obj.row_permissions and not obj.row_permissions(request.user):
     raise NotImplementedError
   return JsonResponse(obj.as_json)
 

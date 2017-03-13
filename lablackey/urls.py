@@ -3,6 +3,7 @@ from django.conf.urls import url
 import views, api
 
 urlpatterns = [
+  url(r'^api/schema/([\w\d]+).([\w\d]+Form)/$',views.get_form_schema),
   url(r'^api/schema/([\w\d]+).([\w\d]+)/$',views.get_schema),
   url(r'^set_email/$',views.set_email ,name='set_email'),
   url(r'^api/login/$',views.login_ajax,name='login'),

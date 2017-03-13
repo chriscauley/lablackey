@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
 
 from .forms import UserEmailForm
-from .unrest import model_to_schema
+from .unrest import model_to_schema, form_to_schema
 
 import json, random
 
@@ -96,3 +96,7 @@ def get_schema(request,app_name,model_name):
   app = apps.get_app_config(app_name)
   model = app.get_model(model_name)
   return JsonResponse({'schema': model_to_schema(model) })
+
+def get_form_schema(request,app_name,form_name):
+  form = getattr(__import__(app_name).forms,form_name)()
+  return JsonResponse({ 'schema': form_to_schema(form) });

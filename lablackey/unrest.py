@@ -1,6 +1,7 @@
 # This file should eventually become it's own unrest library, but then again all of lablackey might go that way
 
 from django.db import models
+from django import forms
 
 EXCLUDE_FIELDS = ['django.db.models.AutoField']
 
@@ -8,6 +9,22 @@ FIELD_MAP = {
   'django.db.models.CharField': { },
   'django_countries.fields.CountryField': { },
 }
+
+def form_to_schema(form):
+  schema = []
+  for name,field in form.fields.items():
+    json = field.widget.attrs
+    json.update({
+      'required': field.required,
+      'name': name,
+      'label': field.label
+    })
+    if hasattr(field,'choices'):
+      json['choices'] = field.choices
+    if isinstance(field.widget,forms.widgets.RadioSelect):
+      json['type'] = 'radio'
+    schema.append(json)
+  return schema
 
 def model_to_schema(model):
   schema = []

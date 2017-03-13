@@ -54,7 +54,11 @@ def send_template_email(template_name, recipients, request=None,
   msg.send()
   return html,text
 
-def print_to_mail(subject='Unnamed message',to=[settings.ADMINS[0][1]],notify_empty=lambda:True):
+admin = None
+if settings.ADMINS:
+  admin = [settings.ADMINS[0][1]]
+
+def print_to_mail(subject='Unnamed message',to=admin,notify_empty=lambda:True):
   def wrap(target):
     def wrapper(*args,**kwargs):
       old_stdout = sys.stdout

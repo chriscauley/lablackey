@@ -17,8 +17,11 @@ def form_to_schema(form):
     json.update({
       'required': field.required,
       'name': name,
-      'label': field.label
+      'label': field.label,
+      'help_text': field.help_text
     })
+    if not json['help_text']:
+      json['help_text'] = form.Meta.model._meta.get_field(name).help_text
     if hasattr(field,'choices'):
       json['choices'] = field.choices
     if isinstance(field.widget,forms.widgets.RadioSelect):

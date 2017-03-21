@@ -34,12 +34,11 @@ class SMSNumber(models.Model):
     client = TwilioRestClient(settings.TWILIO_ACCOUNT_SID,settings.TWILIO_AUTH_TOKEN)
     message = client.messages.create(to=self.number,from_=from_,body=body)
   def call(self,url,from_=settings.TWILIO_NUMBER):
-    print url
     client = TwilioRestClient(settings.TWILIO_ACCOUNT_SID,settings.TWILIO_AUTH_TOKEN)
     client.calls.create(to=self.number,from_=from_,url=url)
     
 if getattr(settings,'TESTING',None):
-  import sms
+  from lablackey import sms
   sms.outbox = []
   def _send(self,body,from_=settings.TWILIO_NUMBER):
     m = Message()

@@ -3,6 +3,8 @@ from django.contrib.sessions.models import Session
 from django.db import models
 from django.template.defaultfilters import slugify
 
+from annoying.fields import AutoOneToOneField
+
 def _prep_kwargs_with_auth(request,kwargs):
   if request.user.is_authenticated():
     kwargs['user'] = request.user
@@ -113,5 +115,10 @@ class SlugModel(models.Model):
 
 class UserModel(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL)
+  class Meta:
+    abstract = True
+
+class User121Model(models.Model):
+  user = AutoOneToOneField(settings.AUTH_USER_MODEL)
   class Meta:
     abstract = True

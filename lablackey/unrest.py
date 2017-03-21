@@ -12,6 +12,8 @@ FIELD_MAP = {
 
 def form_to_schema(form):
   schema = []
+  initial = {}
+  instance = form.instance
   for name,field in form.fields.items():
     json = field.widget.attrs
     json.update({
@@ -20,6 +22,8 @@ def form_to_schema(form):
       'label': field.label,
       'help_text': field.help_text
     })
+    if form.instance:
+      initial[name] = field.initial or getattr(form.instance,name)
     if not json['help_text']:
       json['help_text'] = form.Meta.model._meta.get_field(name).help_text
     if hasattr(field,'choices'):
@@ -27,7 +31,11 @@ def form_to_schema(form):
     if isinstance(field.widget,forms.widgets.RadioSelect):
       json['type'] = 'radio'
     schema.append(json)
-  return schema
+  return {
+    'schema': schema,
+    'initial': initial,
+    'errors':   { k: e.get_json_data()[0]['message'] for k,e in form.errors.items() } or None,
+  }
 
 def model_to_schema(model):
   schema = []

@@ -28,7 +28,7 @@ class SMSNumber(models.Model):
     self.code = random_code()
     self.expire = expiry()
     self.save()
-    send("Code: %s for %s"%(self.code,settings.SITE_NAME),self.number)
+    self.send("Code: %s for %s"%(self.code,settings.SITE_NAME))
   __unicode__ = lambda self: "%s - %s"%(self.number,self.user)
   def send(self,body,from_=settings.TWILIO_NUMBER):
     client = TwilioRestClient(settings.TWILIO_ACCOUNT_SID,settings.TWILIO_AUTH_TOKEN)

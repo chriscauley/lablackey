@@ -115,6 +115,11 @@ class SlugModel(models.Model):
 
 class UserModel(models.Model):
   user = models.ForeignKey(settings.AUTH_USER_MODEL)
+  created = models.DateTimeField(auto_now_add=True)
+  modified = models.DateTimeField(auto_now_add=True)
+  can_edit_own = True
+  def row_permissions(self,user):
+    return user.is_superuser or (user == user and self.can_edit_own)
   class Meta:
     abstract = True
 

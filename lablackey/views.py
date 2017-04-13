@@ -9,7 +9,7 @@ from django import forms
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
 
-from .forms import UserEmailForm
+from .forms import UserEmailForm, RequestModelForm
 from loader import load_class
 from .unrest import model_to_schema, form_to_schema
 
@@ -100,10 +100,13 @@ def get_schema(request,app_name,model_name):
 
 def get_form_schema(request,app_name,form_name):
   form = load_class("%s.forms.%s"%(app_name,form_name))
-  form = form(
-    getattr(request,request.method) or None, # GET or POST
-    instance = getattr(form,'get_instance',lambda *a,**k: None)(request), # for unrest like forms
-  )
+  args = [getattr(request,request.method) or None] # GET or POST
+  kwargs = {'instance': getattr(form,'get_instance',lambda *a,**k: None)(request)} # for unrest like forms
+  if issubclass(form,RequestModelForm):
+    form = form(request,**kwargs)
+  else:
+    form = form(*args,**kwargs)
+
   if form.is_valid():
     form.save()
   return JsonResponse(form_to_schema(form))

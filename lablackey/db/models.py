@@ -127,3 +127,33 @@ class User121Model(models.Model):
   user = AutoOneToOneField(settings.AUTH_USER_MODEL)
   class Meta:
     abstract = True
+
+class JsonMixin(object):
+  json_fields = ['pk']
+  filter_fields = []
+  m2m_json_fields = []
+  fk_json_fields = []
+  _private_id = False
+  table_permissions = None
+  row_permissions = None
+  # Row permissions and table permissions should be implemented as a classmethod and method. Like this
+  """
+  @classmethod
+  def table_permissions(cls,user):
+    return True
+  def row_permissions(self,user):
+    return True
+  """
+  @property
+  def as_json(self):
+    out = {}
+    if not self._private_id and not 'pk' in self.json_fields:
+      out['id'] = self.id
+    for f in self.json_fields:
+      out[f] = getattr(self,f)
+    for f in self.fk_json_fields:
+      if getattr(self,f):
+        out[f] = getattr(self,f).as_json
+    for f in self.m2m_json_fields:
+      out[f] = [i .as_json for i in getattr(self,f)]
+    return out

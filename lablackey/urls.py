@@ -1,5 +1,10 @@
 from django.conf import settings
-from django.conf.urls import url
+from django.conf.urls import url, include
+from django.contrib import admin
+from django.contrib.auth import urls as auth_urls
+from django.contrib.staticfiles.views import serve
+
+admin.autodiscover()
 
 import views, api
 
@@ -13,8 +18,11 @@ urlpatterns = [
   url(r'^accounts/logout/$',views.logout),
   url(r'^durf/([\w\d]+)/([\w\d]+)/$',api.get_many),
   url(r'^durf/([\w\d]+)/([\w\d]+)/(\d+)/$',api.get_one),
-  url(r'favicon.ico$', main_views.redirect,
+  url(r'favicon.ico$', views.redirect,
       {'url': getattr(settings,'FAVICON','/static/favicon.png')}),
+  url(r'^admin/', include(admin.site.urls)),
+  url(r'^auth/',include(auth_urls)),
+  url(r'^$',views.render_template,kwargs={'template': "base.html"}),
 ]
 
 if settings.DEBUG:

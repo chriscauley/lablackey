@@ -80,3 +80,5 @@ class SlugModelInline(RawMixin,admin.TabularInline):
 class NamedTreeModelAdmin(RawMixin,admin.ModelAdmin):
   exclude = ('order','level')
 
+class NamedModelAdmin(RawMixin,admin.ModelAdmin):
+  pass

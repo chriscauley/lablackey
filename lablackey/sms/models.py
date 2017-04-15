@@ -46,4 +46,5 @@ if getattr(settings,'TESTING',None):
     m.to = self.number
     m.from_ = from_
     sms.outbox.append(m)
+    print "SMS to %s: %s"%(self.number,body)
   SMSNumber.send = _send

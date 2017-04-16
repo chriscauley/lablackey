@@ -1,18 +1,10 @@
 from django.conf import settings
 from django.contrib.sessions.models import Session
 from django.db import models
+from django.http import HttpRequest
 from django.template.defaultfilters import slugify
 
 from annoying.fields import AutoOneToOneField
-
-def _prep_kwargs_with_auth(request,kwargs):
-  if request.user.is_authenticated():
-    kwargs['user'] = request.user
-  else:
-    if not request.session.exists(request.session.session_key):
-      request.session.create()
-    kwargs['session'] = Session.objects.get(session_key=request.session.session_key)
-  return kwargs
 
 class JsonMixin(object):
   json_fields = ['pk']
@@ -56,28 +48,35 @@ class NamedModel(JsonModel):
   class Meta:
     abstract = True
 
-class UserOrSessionMixin(object):
-  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True,related_name="user_%(app_label)s%(class)ss")
-  session = models.ForeignKey(Session,null=True,blank=True,related_name="user_%(app_label)s%(class)ss",
-                              on_delete=models.SET_NULL)
-  session_key = models.CharField(max_length=40,null=True,blank=True)
+def _prep_with_auth(*args,**kwargs):
+  request = kwargs.pop("request",None)
+  if args and issubclass(args[0].__class__,HttpRequest):
+    request = args[0]
+    args = args[1:]
+  if not request:
+    return args,kwargs
+  if request.user.is_authenticated():
+    kwargs['user'] = request.user
+  else:
+    if not request.session.exists(request.session.session_key):
+      request.session.create()
+    kwargs['session'] = Session.objects.get(session_key=request.session.session_key)
+  return args,kwargs
 
-  @classmethod
-  def get_or_create_from_request(clss,request,**kwargs):
-    obj = clss.get_or_init_from_request(request,**kwargs)
-    if not obj.pk:
-      obj.save()
-    return obj
-
-  @classmethod
-  def get_or_init_from_request(clss,request,**kwargs):
+class UserOrSessionManager(models.Manager):
+  def get(self,*args,**kwargs):
     try:
-      return clss.get_from_request(request,**kwargs)
-    except clss.DoesNotExist:
+      return self.request_filter(*args,**kwargs)[0]
+    except IndexError,e:
+      raise self.model.DoesNotExist(e)
+  def get_or_init(self,*args,**kwargs):
+    try:
+      return self.get(*args,**kwargs),False
+    except self.model.DoesNotExist:
       pass
 
     # need session or user
-    kwargs = _prep_kwargs_with_auth(request,kwargs)
+    args,kwargs = _prep_with_auth(*args,**kwargs)
     defaults = kwargs.pop("defaults",{})
 
     #can't make an object with an id, pk, or complex lookup
@@ -87,28 +86,27 @@ class UserOrSessionMixin(object):
       if "__" in key:
         kwargs.pop(key,"")
 
-    obj = clss(**kwargs)
+    obj = self.model(**kwargs)
     for k,v in defaults.items():
       setattr(obj,k,v)
-    return obj
+    return obj, True
 
-  @classmethod
-  def get_from_request(clss,request,**kwargs):
-    if 'session_key' in request.GET and request.user.is_authenticated():
-      # a preexisting object needs to be moved from session to user
-      try:
-        obj = clss.objects.get(session_key=request.GET['session_key'])
-        obj.session_key = None
-        obj.user = request.user
-        obj.save()
-        return obj
-      except clss.DoesNotExist:
-        # probably already happened, move along
-        pass
-    kwargs = _prep_kwargs_with_auth(request,kwargs)
-    return clss.objects.get(**kwargs)
+  def get_or_create(self,*args,**kwargs):
+    obj,new = self.get_or_init(*args,**kwargs)
+    if new:
+      obj.save()
+    return obj, new
 
-class UserOrSessionModel(JsonModel,UserOrSessionMixin):
+  def request_filter(self,*args,**kwargs):
+    args,kwargs = _prep_with_auth(*args,**kwargs)
+    return self.filter(*args,**kwargs)
+
+class UserOrSessionModel(JsonModel):
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True,related_name="user_%(app_label)s%(class)ss")
+  session = models.ForeignKey(Session,null=True,blank=True,related_name="user_%(app_label)s%(class)ss",
+                              on_delete=models.SET_NULL)
+  session_key = models.CharField(max_length=40,null=True,blank=True)
+  objects = UserOrSessionManager()
   class Meta:
     abstract = True
 

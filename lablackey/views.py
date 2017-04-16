@@ -23,7 +23,8 @@ def single_page_app(request,*args,**kwargs):
   return TemplateResponse(request,'single_page_app.html',{'args':args,'kwargs':kwargs})
 
 def render_template(request,*args,**kwargs):
-  return TemplateResponse(request,kwargs['template'],kwargs)
+  template = kwargs.get('template',"base.html")
+  return TemplateResponse(request,template,kwargs)
 
 redirect = lambda request,url: HttpResponseRedirect(url)
 

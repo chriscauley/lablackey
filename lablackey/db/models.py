@@ -44,9 +44,17 @@ class JsonMixin(object):
       out[f] = [i .as_json for i in getattr(self,f)]
     return out
 
-class NamedModel(models.Model,JsonMixin):
+class JsonModel(models.Model,JsonMixin):
+  created = models.DateTimeField(auto_now_add=True)
+  modified = models.DateTimeField(auto_now=True)
+  class Meta:
+    abstract = True
+
+class NamedModel(JsonModel):
   name = models.CharField(max_length=128)
   __unicode__ = lambda self: self.name
+  class Meta:
+    abstract = True
 
 class UserOrSessionMixin(object):
   user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True,related_name="user_%(app_label)s%(class)ss")
@@ -100,8 +108,9 @@ class UserOrSessionMixin(object):
     kwargs = _prep_kwargs_with_auth(request,kwargs)
     return clss.objects.get(**kwargs)
 
-class UserOrSessionModel(models.Model,UserOrSessionMixin):
-  pass
+class UserOrSessionModel(JsonModel,UserOrSessionMixin):
+  class Meta:
+    abstract = True
 
 class OrderedModel(models.Model):
   order = models.PositiveIntegerField(default=99999)
@@ -150,10 +159,8 @@ class SlugModel(models.Model):
   class Meta:
     abstract = True
 
-class UserModel(models.Model):
+class UserModel(JsonModel):
   user = models.ForeignKey(settings.AUTH_USER_MODEL)
-  created = models.DateTimeField(auto_now_add=True)
-  modified = models.DateTimeField(auto_now_add=True)
   can_edit_own = True
   def row_permissions(self,user):
     return user.is_superuser or (user == user and self.can_edit_own)

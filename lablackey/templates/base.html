@@ -14,10 +14,7 @@
     <link rel="stylesheet" href="{% static "unrest/.dist/unrest-built.css" %}" />
     <script>var uR = { _ready: [], ready: function(f) { uR._ready.push(f) } }</script>
 
-    {% compress css %}
-    <link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}less/base.less" />
-    {% endcompress %}
-
+    {% include "_css.html" %}
     <!--[if IE 7]>
       <link rel="stylesheet" type="text/css" href="/static/design/ie7.css"/>
     <![endif]-->
@@ -40,10 +37,8 @@
   </body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/riot/2.6.8/riot.js"></script>
-  {% compress js %}
   {% include "_js.html" %}
   <script src="{% static "unrest/.dist/unrest-built.js" %}"></script>
   <script src="{% static "js/init.js" %}"></script>
   <script src="{% static "js/router.js" %}"></script>
-  {% endcompress %}
 </html>

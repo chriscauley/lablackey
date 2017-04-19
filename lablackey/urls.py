@@ -25,6 +25,10 @@ urlpatterns = [
   url(r'^$',views.render_template,kwargs={'template': "base.html"}),
 ]
 
+if "social.apps.django_app.default" in settings.INSTALLED_APPS:
+  import social.apps.django_app.urls
+  urlpatterns.append(url('', include(social.apps.django_app.urls, namespace='social')))
+
 if settings.DEBUG:
   from django.views.static import serve
   urlpatterns += [

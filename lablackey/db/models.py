@@ -12,14 +12,14 @@ class JsonMixin(object):
   m2m_json_fields = []
   fk_json_fields = []
   _private_id = False
-  table_permissions = None
-  row_permissions = None
+  table_permissions = classmethod(lambda clss,user: True)
+  row_permissions = lambda self,user: True
   # Row permissions and table permissions should be implemented as a classmethod and method. Like this
   """
   @classmethod
-  def table_permissions(cls,user):
+  def table_permissions(cls,user): # whether or not user can view table (class)
     return True
-  def row_permissions(self,user):
+  def row_permissions(self,user): # whether or not user can view row (instance)
     return True
   """
   @property
@@ -28,7 +28,10 @@ class JsonMixin(object):
     if not self._private_id and not 'pk' in self.json_fields:
       out['id'] = self.id
     for f in self.json_fields:
-      out[f] = getattr(self,f)
+      key = f
+      if type(f) == tuple:
+        f, key = f
+      out[key] = getattr(self,f)
     for f in self.fk_json_fields:
       if getattr(self,f):
         out[f] = getattr(self,f).as_json
@@ -107,6 +110,14 @@ class UserOrSessionModel(JsonModel):
                               on_delete=models.SET_NULL)
   session_key = models.CharField(max_length=40,null=True,blank=True)
   objects = UserOrSessionManager()
+  filter_fields = ['user_id']
+  can_edit_own = False
+  private = False
+  def row_permissions(self,user):
+    if user.is_superuser or (self.user and self.user == user):
+      return True
+    if self.session and (self.session == user):
+      return True
   class Meta:
     abstract = True
 
@@ -159,9 +170,10 @@ class SlugModel(models.Model):
 
 class UserModel(JsonModel):
   user = models.ForeignKey(settings.AUTH_USER_MODEL)
-  can_edit_own = True
+  can_edit_own = False
+  private = False
   def row_permissions(self,user):
-    return user.is_superuser or (user == user and self.can_edit_own)
+    return self.public or user.is_superuser or (user == self.user)
   class Meta:
     abstract = True
 

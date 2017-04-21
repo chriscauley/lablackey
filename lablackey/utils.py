@@ -4,10 +4,18 @@ from django.core.mail import mail_admins
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden, HttpResponse
 
-import traceback, json
+import traceback, json, datetime
 
 from .decorators import cached_method as _cm, cached_property as _cp
 import warnings
+
+class TimeIt():
+  def __init__(self):
+    self.last = self.start = datetime.datetime.now()
+  def __call__(self,s=None):
+    now = datetime.datetime.now()
+    print s,'\t',int((now-self.start).total_seconds()*1000),'\t',int((now-self.last).total_seconds()*1000)
+    self.last = datetime.datetime.now()
 
 def cached_method(*args,**kwargs):
   warnings.warn("Import cached_method from lablackey.decorators, not utils (%s)"%args[0])

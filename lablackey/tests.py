@@ -52,8 +52,8 @@ class ClientTestCase(TestCase):
     return user
   def check_subjects(self,subjects,outbox=None):
     outbox = outbox or mail.outbox
-    subjects = [m.subject.replace(settings.EMAIL_SUBJECT_PREFIX,'') for m in outbox]
-    self.assertTrue(_check(subjects,subjects))
+    out_subjects = [m.subject.replace(settings.EMAIL_SUBJECT_PREFIX,'') for m in outbox]
+    self.assertTrue(_check(subjects,out_subjects))
   def check_recipients(self,recipients,outbox=None):
     outbox = outbox or mail.outbox
     self.assertTrue(_check(recipients,[m.recipients() for m in outbox]))

@@ -1,5 +1,9 @@
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.http import JsonResponse, HttpResponseRedirect
+
+from lablackey.mail import send_template_email
 
 import urllib2
 
@@ -47,3 +51,20 @@ def cached_method(target,name=None):
 
 def cached_property(target,name=None):
   return property(cached_method(target,name=name))
+
+def activate_user(target):
+  def wrapper(request,*args,**kwargs):
+    data = request.POST or request.GET
+    model = get_user_model()
+    if data.get('email',None):
+      try:
+        if hasattr(model.objects,"keyword_search"):
+          user = model.objects.keyword_search(data.get('email'))[0]
+        else:
+          user = model.objects.get(email=data.get("email"))
+        user.is_active = True
+        user.save()
+      except (model.DoesNotExist,IndexError):
+        send_template_email("email/no_user",[data.get("email")],context={})
+    return target(request,*args,**kwargs)
+  return wrapper

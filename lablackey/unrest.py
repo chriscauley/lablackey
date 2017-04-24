@@ -3,6 +3,16 @@
 from django.db import models
 from django import forms
 
+from django.utils.functional import Promise
+from django.utils.encoding import force_text
+from django.core.serializers.json import DjangoJSONEncoder
+
+class LazyEncoder(DjangoJSONEncoder):
+  def default(self, obj):
+    if isinstance(obj, Promise):
+      return force_text(obj)
+    return super(LazyEncoder, self).default(obj)
+
 EXCLUDE_FIELDS = ['django.db.models.AutoField']
 
 FIELD_MAP = {
@@ -13,7 +23,7 @@ FIELD_MAP = {
 def form_to_schema(form):
   schema = []
   initial = {}
-  instance = form.instance
+  instance = getattr(form,'instance',None)
   for name,field in form.fields.items():
     json = field.widget.attrs
     json.update({
@@ -22,9 +32,9 @@ def form_to_schema(form):
       'label': field.label,
       'help_text': field.help_text
     })
-    if form.instance:
-      initial[name] = field.initial or getattr(form.instance,name)
-    if not json['help_text']:
+    if instance:
+      initial[name] = field.initial or getattr(instance,name)
+    if not json['help_text'] and hasattr(form,"Meta"):
       json['help_text'] = form.Meta.model._meta.get_field(name).help_text
     if hasattr(field,'choices'):
       json['choices'] = field.choices

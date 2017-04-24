@@ -9,9 +9,9 @@ from django import forms
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
 
-from .forms import UserEmailForm, RequestModelForm
+from .forms import UserEmailForm, RequestModelForm, RequestForm
 from loader import load_class
-from .unrest import model_to_schema, form_to_schema
+from .unrest import model_to_schema, form_to_schema, LazyEncoder
 
 import json, random
 
@@ -107,9 +107,12 @@ def get_form_schema(request,app_name,form_name):
   kwargs = {'instance': getattr(form,'get_instance',lambda *a,**k: None)(request)} # for unrest like forms
   if issubclass(form,RequestModelForm):
     form = form(request,**kwargs)
+  elif issubclass(form,RequestForm):
+    kwargs.pop("instance")
+    form = form(request,**kwargs)
   else:
     form = form(*args,**kwargs)
 
   if form.is_valid():
     form.save()
-  return JsonResponse(form_to_schema(form))
+  return JsonResponse(form_to_schema(form),encoder=LazyEncoder)

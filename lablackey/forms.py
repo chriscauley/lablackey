@@ -20,3 +20,11 @@ class RequestModelForm(forms.ModelForm):
     files = request.FILES or None
     super(RequestModelForm,self).__init__(data,files,*args,**kwargs)
     self.request = request
+
+class RequestForm(forms.Form):
+  """ Same as above but inherits from Form instead of ModelForm"""
+  def __init__(self,request,*args,**kwargs):
+    data = request.POST or request.GET or None
+    files = request.FILES or None
+    super(RequestForm,self).__init__(data,files,*args,**kwargs)
+    self.request = request

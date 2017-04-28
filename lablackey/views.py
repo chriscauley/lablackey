@@ -115,4 +115,7 @@ def get_form_schema(request,app_name,form_name):
 
   if form.is_valid():
     form.save()
+    return JsonResponse({
+      'ur_route_to': getattr(form,"success_url",None) or request.POST.get("next","/")
+    })
   return JsonResponse(form_to_schema(form),encoder=LazyEncoder)

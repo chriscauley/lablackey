@@ -40,8 +40,11 @@ def form_to_schema(form):
       json['choices'] = field.choices
     if isinstance(field.widget,forms.widgets.RadioSelect):
       json['type'] = 'radio'
+    if isinstance(field.widget,forms.PasswordInput):
+      json['type'] = 'password'
     schema.append(json)
   return {
+    'form_title': getattr(form,"form_title",None),
     'schema': schema,
     'initial': initial,
     'errors':   { k: e.get_json_data()[0]['message'] for k,e in form.errors.items() } or None,

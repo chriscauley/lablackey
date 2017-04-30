@@ -14,8 +14,8 @@ def auth_required(func, **decorator_kwargs):
     if request.user.is_authenticated():
       return func(request, *args, **kwargs)
     if request.is_ajax():
-      response = JsonResponse({'error': "You must be logged in to continue"},status=401)
-      response['WWW-Authenticate'] = 'Basic realm="api"'
+      response = JsonResponse({'status': 401,'error': "You must be logged in to continue"},status=400)
+      #response['WWW-Authenticate'] = 'Basic realm="api"'
       return response
     return login_required(func)(request,**decorator_kwargs)
   wrapper.__doc__ = func.__doc__

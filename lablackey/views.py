@@ -35,6 +35,9 @@ def login_ajax(request):
   if not user:
     return JsonResponse({ 'error': ['Username and password do not match.'] })
   login(request,user)
+  view = getattr(settings,"USER_JSON_VIEW",None)
+  if view:
+    return load_class(view)(request)
   return JsonResponse({ 'user': {'id': user.id, 'username': user.username, 'email': user.email } })
 
 def user_json(request):

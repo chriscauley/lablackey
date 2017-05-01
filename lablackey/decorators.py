@@ -1,11 +1,42 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.sites.models import Site
+from django.contrib.sites.requests import RequestSite
 from django.http import JsonResponse, HttpResponseRedirect
+from django.utils import timezone
 
 from lablackey.mail import send_template_email
+from registration.models import RegistrationProfile
 
-import urllib2
+import urllib2, datetime
+
+def resend_activation(target):
+  def wrapper(request,*args,**kwargs):
+    data = request.POST or request.GET
+    model = get_user_model()
+    if data.get('username',None):
+      try:
+        if hasattr(model.objects,"keyword_search"):
+          user = model.objects.keyword_search(data.get('username'),force_active=False)[0]
+        else:
+          user = model.objects.get(username=data.get("username"))
+        if not user.is_active and user.check_password(data.get("password","")[:200]):
+          messages.error(request,"Your account is inactive. Please check your email (%s) for an activation link. If you no longer have access to this email address, please contact %s"%(user.email,settings.MEMBERSHIP_EMAIL))
+          if Site._meta.installed:
+            site = Site.objects.get_current()
+          else:
+            site = RequestSite(request)
+          profile,new = RegistrationProfile.objects.get_or_create(user=user)
+          profile.expire_date = timezone.now() + datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
+          profile.save()
+          profile.send_activation_email(site)
+          return JsonResponse({'ur_route_to': "" })
+      except (model.DoesNotExist,IndexError):
+        pass
+    return target(request,*args,**kwargs)
+  return wrapper
 
 def auth_required(func, **decorator_kwargs):
   # kwargs can be redirect_field_name and login_url (see login_required)

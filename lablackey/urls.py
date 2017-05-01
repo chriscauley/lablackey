@@ -16,8 +16,6 @@ urlpatterns = [
   url(r'^form/([\w\d]+).([\w\d]+Form)/$',views.render_template,name="ur-form"),
   #url(r'^api/schema/([\w\d]+).([\w\d]+)/$',views.get_schema),
   url(r'^set_email/$',views.set_email ,name='set_email'),
-  url(r'^api/login/$',resend_activation(views.login_ajax),name='login'),
-  url(r'^api/register/$',views.register_ajax),
   url(r'^user.json$',views.user_json),
   url(r'^accounts/logout/$',views.logout),
   url(r'^durf/([\w\d]+)/([\w\d]+)/$',api.get_many),

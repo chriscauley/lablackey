@@ -31,6 +31,9 @@ class ClientTestCase(TestCase):
   A TestCase with added functionality such as user/object creationg, login/logout.
   """
   _passwords = {}
+  def check_url(self,url,snippet):
+    response = self.client.get(url)
+    self.assertTrue(snippet in str(response.render()))
   def login(self,username,password=None):
     if isinstance(username,get_user_model()):
       username = username.username

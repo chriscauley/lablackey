@@ -19,7 +19,7 @@ def render_template(name,context):
     except TemplateDoesNotExist:
       pass
   if html and ext == 'md':
-    html = markdown.markdown(html, extensions=['lablackey.mdx_urlize'], safe_mode=True)
+    html = markdown.markdown(html, extensions=['lablackey.mdx_urlize','markdown.extensions.nl2br'], safe_mode=True)
   text = None
   try:
     text = get_template("%s.txt"%name).render(context)

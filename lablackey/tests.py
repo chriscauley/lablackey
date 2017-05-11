@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
@@ -31,6 +32,16 @@ class ClientTestCase(TestCase):
   A TestCase with added functionality such as user/object creationg, login/logout.
   """
   _passwords = {}
+  fixture_apps = []
+  verbosity = 0
+  def setUp(self):
+    for app_name in self.fixture_apps:
+      call_command("loaddata","%s/fixtures/test.json"%app_name,"-v 0")
+  def call_command(self,*args):
+    """ A wrapper around django.core.management.commands.call_command which sets "-v self.verbosity" """
+    args = list(args)
+    args.append("-v %s"%self.verbosity)
+    call_command(*args)
   def check_url(self,url,snippet):
     response = self.client.get(url)
     self.assertTrue(snippet in str(response.render()))

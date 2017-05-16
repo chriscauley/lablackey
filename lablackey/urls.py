@@ -9,7 +9,7 @@ from lablackey.registration import urls as registration_urls
 
 admin.autodiscover()
 
-import views, api
+import views
 
 urlpatterns = [
   url(r'^api/schema/([\w\d\.]+)\.([\w\d]+Form)/$',views.get_form_schema),
@@ -19,8 +19,6 @@ urlpatterns = [
   url(r'^set_email/$',views.set_email ,name='set_email'),
   url(r'^user.json$',views.user_json),
   url(r'^accounts/logout/$',views.logout),
-  url(r'^durf/([\w\d]+)/([\w\d]+)/$',api.get_many),
-  url(r'^durf/([\w\d]+)/([\w\d]+)/(\d+)/$',api.get_one),
   url(r'favicon.ico$', views.redirect,
       {'url': getattr(settings,'FAVICON','/static/favicon.png')}),
   url(r'^admin/', include(admin.site.urls)),
@@ -28,6 +26,15 @@ urlpatterns = [
   url(r'^accounts/', include(registration_urls,namespace="depracated")),#! Depracated in favor of auth
   url(r'^$',views.render_template,kwargs={'template': "base.html"}),
 ]
+
+if 'lablackey.api' in settings.INSTALLED_APPS:
+  from lablackey.api import views as api_views
+  from lablackey.api.urls import build_urls
+  urlpatterns += [
+    url(r'^durf/([\w\d]+)/([\w\d]+)/$',api_views.get_many),
+    url(r'^durf/([\w\d]+)/([\w\d]+)/(\d+)/$',api_views.get_one),
+  ]
+  urlpatterns += build_urls()
 
 if "social.apps.django_app.default" in settings.INSTALLED_APPS:
   import social.apps.django_app.urls

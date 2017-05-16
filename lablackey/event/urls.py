@@ -1,5 +1,6 @@
 from django.conf.urls import *
 
+import lablackey.views
 import views
 
 urlpatterns = [
@@ -19,4 +20,7 @@ urlpatterns = [
   url(r'^checkin/$', views.checkin, name='event_rsvp'),
   url(r'^(own|disown)/(\d+)/',views.owner_ajax),
   url(r'^bulk.json$',views.bulk_ajax),
+
+  url(r'^c/$',lablackey.views.single_page_app,name="conference"),
+  url(r'^conference.json$',views.conference_json,name="conference.json"),
 ]

@@ -1,3 +1,11 @@
+<event-schedule>
+  <ur-tabs>
+    <ur-tab each={ days }>
+      <event-day events={ events } title={ verbose }></event-day>
+    </ur-tab>
+  </ur-tabs>
+</event-schedule>
+
 <event-owner>
   <div if={ is_owner }>
     <h3>You are an organizer of this event</h3>

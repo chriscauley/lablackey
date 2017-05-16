@@ -99,3 +99,23 @@ def activate_user(target):
         send_template_email("email/no_user",[data.get("email")],context={})
     return target(request,*args,**kwargs)
   return wrapper
+
+def timebomb(check_function=lambda request,*args,**kwargs: False):
+  """
+  A wrapper to quickly tell if a API request is out of date or not.
+  check_function should look at request.GET['__when'] and tell if the data is newer than that time.
+  if False: data is expired. return the new data with a timestamp.
+  if True: return "okay" and a timestamp of when was checked (in server timezone).
+  check_function should be optimized to be as faster than the view function (otherwise what's the point?)
+  Note that views using timebomb should return a json.dumps-able dict, not an HttpResponse.
+  wrap with @timebomb() to always declare data stale.
+  """
+  def decorator(target):
+    def wrapper(request,*args,**kwargs):
+      if check_function(request,*args,**kwargs):
+        return JsonResponse({'__timebomb': 'okay','__when': timezone.now()})
+      data = target(request,*args,**kwargs)
+      data['__when'] = timezone.now()
+      return JsonResponse(data)
+    return wrapper
+  return decorator

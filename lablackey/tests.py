@@ -1,3 +1,4 @@
+from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
@@ -5,7 +6,7 @@ from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase, Client
 
-import random
+import random, os
 
 def _check(a,b):
   success = sorted(a) == sorted(b)
@@ -36,7 +37,8 @@ class ClientTestCase(TestCase):
   verbosity = 0
   def setUp(self):
     for app_name in self.fixture_apps:
-      call_command("loaddata","%s/fixtures/test.json"%app_name,"-v 0")
+      app = apps.get_app_config(app_name)
+      self.call_command("loaddata",os.path.join(app.module.__path__[0],"fixtures/test.json"))
   def call_command(self,*args):
     """ A wrapper around django.core.management.commands.call_command which sets "-v self.verbosity" """
     args = list(args)

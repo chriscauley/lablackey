@@ -95,6 +95,7 @@ class EventAdmin(TaggedPhotoAdmin):
   list_display = ("__unicode__","upcoming_count","organizers","get_repeat_verbose","access","allow_rsvp","rsvp_cutoff")
   list_editable = ("access","allow_rsvp","rsvp_cutoff")
   list_filter = ("allow_rsvp","access")
+  list_per_page = 200
   inlines = [EventRepeatInline,EventOwnerInline,EventOccurrenceInline]
   search_fields = ['name']
   def organizers(self,obj):

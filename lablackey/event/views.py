@@ -55,15 +55,11 @@ def index(request,daystring=None):
     if len(week) == 7:
       weeks.append(week)
       week = []
-  non_member = True
-  if request.user.is_authenticated():
-    non_member = request.user.level_id == settings.DEFAULT_MEMBERSHIP_LEVEL
   values = {
     'weeks': weeks,
     'current_date': start,
     'next': datetime.date(year if month!=12 else year+1,month+1 if month!=12 else 1,1),
     'previous': datetime.date(year if month!=1 else year-1,month-1 if month!=1 else 12,1),
-    'non_member': non_member,
   }
   return TemplateResponse(request,'event/index.html',values)
 
@@ -190,3 +186,16 @@ def bulk_ajax(request):
     'occurrences': occurrences,
     'eventrepeat': eventrepeat.as_json,
   })
+
+def conference_json(request):
+  events = Event.objects.filter(hidden=False)
+  event_owners = events.values_list('eventowner__user_id',flat=True)
+  out = {
+    'events': [e.as_json for e in events],
+    'eventoccurrences': [o.as_json for o in EventOccurrence.objects.filter(event__in=events)],
+    'owners': [
+      {k: getattr(u,k) for k in ['username','first_name','last_name','id']}
+      for u in get_user_model().objects.filter(id__in=event_owners)
+    ],
+  }
+  return JsonResponse(out)

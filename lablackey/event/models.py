@@ -9,7 +9,7 @@ from django.template.defaultfilters import slugify, date, urlencode
 
 from media.models import PhotosMixin
 from lablackey.contenttypes import get_contenttype
-from lablackey.db.models import UserModel, JsonMixin
+from lablackey.db.models import UserModel, JsonMixin, JsonModel
 from lablackey.decorators import cached_property, cached_method
 from lablackey.geo.models import Room
 
@@ -37,7 +37,7 @@ class Access(models.Model):
   class Meta:
     ordering = ("order",)
 
-class Event(PhotosMixin,models.Model):
+class Event(PhotosMixin,JsonModel):
   _use_default_photo = True
   name = models.CharField(max_length=128,null=True,blank=True)
   url = models.CharField(max_length=256,null=True,blank=True)
@@ -58,6 +58,7 @@ class Event(PhotosMixin,models.Model):
   _ht = "If true, members cannot RSVP unless they have been through the orientation."
   orientation_required = models.BooleanField(default=False,help_text=_ht)
   owner_ids = property(lambda self: list(self.eventowner_set.all().values_list("user_id",flat=True)))
+  json_fields = ['name', 'url', 'short_name', 'room_id', 'allow_rsvp', 'owner_ids']
   @property
   def non_custom_repeats(self):
     return self.eventrepeat_set.exclude(repeat_flavor="custom")
@@ -335,10 +336,10 @@ class EventOccurrence(PhotosMixin,OccurrenceModel):
   @property
   def as_json(self):
     return {
-      'room_id': self.event.room_id,
       'name': self.name,
       'start': str(self.start),
       'end': str(self.end),
+      'event_id': self.event_id,
     }
   class Meta:
     ordering = ('start',)

@@ -5,7 +5,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import forms
 
 from .models import Post
-from .utils import localize_date
 from media.models import Photo
 
 import datetime
@@ -62,7 +61,6 @@ class PostForm(TaggedModelForm):
 
   def __init__(self, *args, **kwargs):
     # checking for user argument here for a more
-    # localized form
     self.user = None
     self.timezone = None
     if kwargs.get('instance',None):

@@ -320,7 +320,7 @@ class EventOccurrence(PhotosMixin,OccurrenceModel):
   icon = property(lambda self: self.event.access.icon)
   try:
     _cid = ContentType.objects.get(model="eventoccurrence").id
-  except ContentType.DoesNotExist:
+  except (ContentType.DoesNotExist,ProgrammingError):
     pass # this breaks on the initial migration
   @cached_method
   def get_rsvps(self):

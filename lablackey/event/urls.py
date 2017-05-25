@@ -21,6 +21,6 @@ urlpatterns = [
   url(r'^(own|disown)/(\d+)/',views.owner_ajax),
   url(r'^bulk.json$',views.bulk_ajax),
 
-  url(r'^c/$',lablackey.views.single_page_app,name="conference"),
+  url(r'^schedule/$',lablackey.views.single_page_app,name="conference"),
   url(r'^conference.json$',views.conference_json,name="conference.json"),
 ]

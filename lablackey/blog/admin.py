@@ -33,6 +33,7 @@ if 'django.contrib.flatpages' in settings.INSTALLED_APPS:
   from django.contrib.flatpages.models import FlatPage
   from django.contrib.flatpages.admin import FlatPageAdmin
   from django.contrib.flatpages.forms import *
+  from django.contrib import messages
 
   from media.admin import TaggedPhotoInline
 
@@ -57,5 +58,10 @@ if 'django.contrib.flatpages' in settings.INSTALLED_APPS:
     list_display = ('url','title','template_name')
     form = FlatPageForm
     #inlines = [TaggedPhotoInline]
-
+    def save_model(self, request, obj, form, change):
+      old_url = obj.url
+      super(FlatPageAdmin, self).save_model(request, obj, form, change)
+      obj = self.model.objects.get(id=obj.id)
+      if old_url != obj:
+        messages.error(request,"The url of this page has been changed. This will not update unless the server is reset. Please contact the administrator")
   admin.site.register(FlatPage,FlatPageAdmin)

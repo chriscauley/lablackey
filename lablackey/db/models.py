@@ -6,6 +6,47 @@ from django.template.defaultfilters import slugify
 
 from annoying.fields import AutoOneToOneField
 
+def as_json(self):
+  out = {}
+  if not getattr(self,"_private_id",None) and not 'pk' in self.json_fields:
+    out['id'] = self.id
+  for f in self.json_fields:
+    key = f
+    if type(f) == tuple:
+      f, key = f
+    out[key] = getattr(self,f)
+  for f in self.fk_json_fields:
+    if getattr(self,f):
+      out[f] = getattr(self,f).as_json
+  for f in self.m2m_json_fields:
+    out[f] = [i .as_json for i in getattr(self,f)]
+  return out
+
+def register(model,**kwargs):
+  kwargs2 = dict(
+    table_permissions = False,
+    row_permissions = False,
+    filter_fields = [],
+    json_fields = [],
+    as_json = property(as_json),
+    fk_json_fields = [],
+    m2m_json_fields = [],
+  )
+  kwargs2.update(kwargs)
+  kwargs = kwargs2
+  for key,value in kwargs.items():
+    setattr(model,key,value)
+  if not model.json_fields:
+    for field in model._meta.get_fields():
+      if isinstance(field,models.ManyToOneRel):
+        continue
+      if isinstance(field,models.ManyToManyField):
+        continue
+      if isinstance(field,models.ForeignKey):
+        model.json_fields.append(field.attname)
+      else:
+        model.json_fields.append(field.name)
+
 class JsonMixin(object):
   json_fields = ['pk']
   filter_fields = []
@@ -22,22 +63,7 @@ class JsonMixin(object):
   def row_permissions(self,user): # whether or not user can view row (instance)
     return True
   """
-  @property
-  def as_json(self):
-    out = {}
-    if not self._private_id and not 'pk' in self.json_fields:
-      out['id'] = self.id
-    for f in self.json_fields:
-      key = f
-      if type(f) == tuple:
-        f, key = f
-      out[key] = getattr(self,f)
-    for f in self.fk_json_fields:
-      if getattr(self,f):
-        out[f] = getattr(self,f).as_json
-    for f in self.m2m_json_fields:
-      out[f] = [i .as_json for i in getattr(self,f)]
-    return out
+  as_json = property(as_json)
 
 class JsonModel(models.Model,JsonMixin):
   created = models.DateTimeField(auto_now_add=True)

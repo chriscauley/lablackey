@@ -11,6 +11,10 @@ from lablackey.db.admin import RawMixin
 from lablackey.db.forms import StaffMemberForm
 from wmd.widgets import AdminMarkDownInput
 
+from lablackey.db.models import register
+
+register(Post)
+
 class PostAdminForm(PostForm):
   """ Just like post form, but with user """
   exclude = ('slug',)
@@ -37,6 +41,7 @@ if 'django.contrib.flatpages' in settings.INSTALLED_APPS:
 
   from media.admin import TaggedPhotoInline
 
+  register(FlatPage)
   admin.site.unregister(FlatPage)
 
   TEMPLATE_CHOICES = (

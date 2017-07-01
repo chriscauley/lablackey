@@ -10,7 +10,15 @@ from .templatetags.short_codes import explosivo
 from lablackey.db.models import UserModel
 from lablackey.decorators import cached_property
 from media.models import Photo, PhotosMixin
-from lablackey.db.models import SlugModel, OrderedModel
+from lablackey.db.models import OrderedModel
+
+TEMPLATE_CHOICES = getattr(settings,"POST_TEMPLATE_CHOICES",['default'])
+
+TEMPLATE_CHOICES = [(t,t) if (not type(t) in [list,tuple]) else t for t in TEMPLATE_CHOICES]
+POST_TYPES = [
+  ['blog','blog'],
+  ['flatpage','flatpage'],
+]
 
 class Post(PhotosMixin,UserModel):
   user_can_edit = True
@@ -23,8 +31,9 @@ class Post(PhotosMixin,UserModel):
   content = models.TextField(blank=True)
   short_content = models.TextField(null=True,blank=True)
   get_short_content = lambda self: self.short_content or striptags(explosivo(self.content))
-  slug = models.SlugField(max_length=75)
   status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=0)
+  template = models.CharField(max_length=64,choices=TEMPLATE_CHOICES,default=TEMPLATE_CHOICES[0][0])
+  post_type = models.CharField(max_length=64,choices=POST_TYPES,default=POST_TYPES[0][0])
   publish_dt = models.DateTimeField("Publish On",null=True)
   create_dt = models.DateTimeField(auto_now_add=True)
   update_dt = models.DateTimeField(auto_now=True)
@@ -32,6 +41,8 @@ class Post(PhotosMixin,UserModel):
   featured = models.BooleanField(default=False,help_text=_h)
   photo = models.ForeignKey(Photo,null=True,blank=True)
   description = property(lambda self: explosivo(self.content))
+  lite_fields = ['title','url','photo_url']
+  photo_url = property(lambda self: self.first_photo.file.url if self.first_photo else None)
   objects = models.Manager()
 
   @cached_property
@@ -39,10 +50,10 @@ class Post(PhotosMixin,UserModel):
     return self.photo or super(Post,self).first_photo
 
   class Meta:
-    unique_together = ("slug", "user")
     ordering = ('-featured','-publish_dt',)
   __unicode__ = lambda self: self.title or 'Untitled'
 
+  @property
   def url(self):
     return '%s%s' % (settings.SITE_URL, self.get_absolute_url(),)
 
@@ -54,9 +65,7 @@ class Post(PhotosMixin,UserModel):
 
   @models.permalink
   def get_absolute_url(self):
-    return ("post_detail", [self.id, self.slug])
-
-register(Post)
+    return ("post_detail", [self.id, slugify(self.title)])
 
 class PressItem(models.Model):
   title = models.CharField(max_length=64)

@@ -32,25 +32,12 @@ class TaggedModelForm(forms.ModelForm):
   class Meta:
     abstract = True
 
-class PostForm(TaggedModelForm):
+class PostForm(forms.ModelForm): #TaggedModelForm):
   content = forms.CharField(widget=MarkDownInput(),required=False)
   photo = forms.ModelChoiceField(Photo.objects.all(),required=False)
   class Meta:
     model = Post
-    fields = ('title','slug','content','short_content','publish_dt','tags','status','photo')
-
-  def clean_slug(self):
-    slug = self.cleaned_data['slug']
-    if self.instance:
-      if Post.objects.filter(slug=slug, user=self.user).exclude(pk=self.instance.pk).count():
-        raise forms.ValidationError('You already have a post with this slug')
-    return slug
-
-  def clean_tags(self):
-    tags = self.cleaned_data['tags']
-    if not ',' in tags:
-      tags = tags + ','
-    return tags
+    fields = ('title','content','short_content','publish_dt','status','photo')
 
   def save(self,*args,**kwargs):
     try:
@@ -70,8 +57,7 @@ class PostForm(TaggedModelForm):
     if 'user' in kwargs:
       self.user = kwargs.pop('user', None)
     super(PostForm, self).__init__(*args, **kwargs)
-    self.fields['slug'].help_text = "URL will be /blog/your-name/<b>slug-goes-here</b>/"
-    self.fields['tags'].help_text = "Separate tags with commas. Input will be lowercased."
+    #self.fields['tags'].help_text = "Separate tags with commas. Input will be lowercased."
     self.fields['publish_dt'].help_text = "<i>YYYY-MM-DD HH:MM</i> (24-hour time)"
     self.fields['photo'].widget=ForeignKeyRawIdWidget(Post._meta.get_field("photo").rel,admin.site)
     # add span class to charfields

@@ -5,7 +5,6 @@ from crop_override.admin import CropAdmin
 from sorl.thumbnail import get_thumbnail
 
 from .models import Post, Banner, PressItem
-from .forms import PostForm
 
 from lablackey.db.admin import RawMixin
 from lablackey.db.forms import StaffMemberForm
@@ -13,23 +12,16 @@ from wmd.widgets import AdminMarkDownInput
 
 from lablackey.db.models import register
 
-register(Post)
+register(Post,filter_fields=["post_type"])
 
-class PostAdminForm(PostForm):
-  """ Just like post form, but with user """
-  exclude = ('slug',)
-  class Meta:
-    model = Post
-    fields = ('user','title','slug','content','short_content','publish_dt','tags','status','photo')
-
+@admin.register(Post)
 class PostAdmin(RawMixin,admin.ModelAdmin):
-  form = PostAdminForm
-  list_display = ('__unicode__','user','featured','publish_dt','status')
-  list_editable = ('featured','status')
-  search_fields = ('content',)
+  list_display = ('__unicode__','user','publish_dt','status','post_type')
+  list_filter = ('post_type',)
+  search_fields = ('content','title')
   raw_id_fields = ('photo','user')
+  exclude = ("template",)
 
-admin.site.register(Post,PostAdmin)
 admin.site.register(PressItem)
 #admin.site.register(Banner)
 

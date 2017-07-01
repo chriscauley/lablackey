@@ -20,6 +20,17 @@ def as_json(self):
       out[f] = getattr(self,f).as_json
   for f in self.m2m_json_fields:
     out[f] = [i .as_json for i in getattr(self,f)]
+  #! TODO: not 100% sure we need this
+  out['app_label'] = self._meta.app_label
+  out['model_name'] = self._meta.model_name
+  return out
+
+def lite_json(self):
+  out = { 'id': self.id, 'title': self.__unicode__() }
+  if hasattr(self,'get_absolute_url'):
+    out['url'] = self.get_absolute_url()
+  for attr in getattr(self,'lite_fields',[]):
+    out[attr] = getattr(self,attr)
   return out
 
 def register(model,**kwargs):
@@ -29,6 +40,7 @@ def register(model,**kwargs):
     filter_fields = [],
     json_fields = [],
     as_json = property(as_json),
+    lite_json = property(lite_json),
     fk_json_fields = [],
     m2m_json_fields = [],
   )
@@ -63,6 +75,7 @@ class JsonMixin(object):
   def row_permissions(self,user): # whether or not user can view row (instance)
     return True
   """
+  lite_json = property(lite_json)
   as_json = property(as_json)
 
 class JsonModel(models.Model,JsonMixin):

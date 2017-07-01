@@ -41,6 +41,10 @@ if "social.apps.django_app.default" in settings.INSTALLED_APPS:
   import social.apps.django_app.urls
   urlpatterns.append(url('', include(social.apps.django_app.urls, namespace='social')))
 
+if 'social_django' in settings.INSTALLED_APPS:
+  import social_django.urls
+  urlpatterns.append(url('', include(social_django.urls, namespace='social')))
+
 if 'lablackey.blog' in settings.INSTALLED_APPS:
   import lablackey.blog.urls
   urlpatterns.append(url(r'^blog/',include(lablackey.blog.urls)))

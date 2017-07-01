@@ -78,4 +78,4 @@ def get_many(request,app_name,model_name):
   objs = model.objects.filter(**kwargs)
   if model.row_permissions and not [obj.row_permissions(request.user) for obj in objs]:
     raise NotImplementedError
-  return JsonResponse([o.as_json for o in objs],safe=False)
+  return JsonResponse([o.lite_json for o in objs],safe=False)

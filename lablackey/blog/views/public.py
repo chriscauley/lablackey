@@ -26,19 +26,17 @@ def home(request):
     }
   return TemplateResponse(request,"blog/home.html",values)
 
-def post_detail(request, username, slug, template_name="blog/detail.html"):
-  if username.isdigit():
-    post = get_object_or_404(Post,id=username)
-    username = post.user.username
-  else:
-    user = get_object_or_404(get_user_model(), username=username)
-    post = get_object_or_404(Post,user=user,slug=slug)
+def post_detail(request, post_pk, slug, template_name="blog/detail.html"):
+  if post_pk.isdigit():
+    post = get_object_or_404(Post,id=post_pk)
+  else: # old view that no longer is useful, now redirect to the user page
+    user = get_object_or_404(get_user_model(), username=post_pk)
+    return HttpResponseRedirect(reverse("post_list",args=[post_pk]))
 
   if post.status == 'draft' and post.user != request.user and not request.user.is_superuser:
     raise Http404
 
   return TemplateResponse(request, template_name, {
-    'username': username,
     'post': post,
   })
 

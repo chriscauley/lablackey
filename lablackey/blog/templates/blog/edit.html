@@ -4,7 +4,7 @@
 
 {% block header_content %}{% if post %}Edit{% else %}Add{% endif %} Post - {% firstof post.title "Untitled" %}{% endblock %}
 
-{% block content %}
+{% block main %}
 <form action="" method="POST" enctype="multipart/form-data" role="form" id="blogForm">
   {% include "_form_messages.html" with form=form %}
   {% csrf_token %}
@@ -64,16 +64,6 @@
 </script>
 {% endblock %}
 
-{% block side %}
-<h2>Help</h2>
-<div class="well">
-  {% include "_shortcode_help.html" %}
-</div>
-{% endblock %}
-
 {% block extra_body %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap-typeahead.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}jquery.insertat.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}jquery.hotkeys.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}blog_admin.js"></script>
 {% endblock %}

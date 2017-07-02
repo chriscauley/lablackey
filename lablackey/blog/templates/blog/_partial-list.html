@@ -3,20 +3,12 @@
   {% for post in posts|slice:":10" %}
   {% if post.pk != current_post.pk %}
   <li>
-    {% if post.status == 'published' %}
-    <span class="label label-success">{{ post.status }}</span>
-    <a href="{% url "edit" post.pk %}" rel="tooltip" data-original-title="Edit `{% firstof post.title "Untitled" %}`" title="Edit `{% firstof post.title "Untitled" %}`">
-      {% firstof post.title "Untitled" %}
+    <span class="label label-{% if post.status == 'published' %}success{% else %}warning{% endif %}">
+      {{ post.status }}</span>
+    <a href="{% url "edit" post.pk %}" title="Edit `{{ post.title }}`">
+      "{{ post.title }}"
     </a>
-    <span class="post-list-date">{{ post.publish_dt }}</span>
-    {% endif %}
-    {% if post.status == 'draft' %}
-    <span class="label label-warning">{{ post.status }}</span>
-    <a href="{% url "edit" post.pk %}" rel="tooltip" data-original-title="Edit `{% firstof post.title "Untitled" %}`" title="Edit `{% firstof post.title "Untitled" %}`">
-      {% firstof post.title "Untitled" %}
-    </a>
-    <span class="post-list-date">{{ post.update_dt }}
-    {% endif %}
+    <span class="post-list-date">{{ post.update_dt }}</span>
   </li>
   {% endif %}
   {% endfor %}

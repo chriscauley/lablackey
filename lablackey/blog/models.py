@@ -30,7 +30,8 @@ class Post(PhotosMixin,UserModel):
 
   title = models.CharField(max_length=200, blank=True)
   content = models.TextField(blank=True)
-  short_content = models.TextField(null=True,blank=True)
+  _ht = "A short description to show in front page feed."
+  short_content = models.TextField(null=True,blank=True,help_text=_ht)
   get_short_content = lambda self: self.short_content or striptags(explosivo(self.content))
   status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=0)
   template = models.CharField(max_length=64,choices=TEMPLATE_CHOICES,default=TEMPLATE_CHOICES[0][0])

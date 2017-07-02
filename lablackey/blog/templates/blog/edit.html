@@ -5,7 +5,7 @@
 {% block header_content %}{% if post %}Edit{% else %}Add{% endif %} Post - {% firstof post.title "Untitled" %}{% endblock %}
 
 {% block main %}
-<form action="" method="POST" enctype="multipart/form-data" role="form" id="blogForm">
+<form action="" method="POST" enctype="multipart/form-data" role="form" id="blogForm" class="col-sm-12">
   {% include "_form_messages.html" with form=form %}
   {% csrf_token %}
   <div class="form-vertical">
@@ -15,9 +15,7 @@
     {% endif %}
     {% for field in form %}
     <div id="{{ field.name }}" class="form-group">
-      <label for="id_{{ field.name }}">
-        <b>{{ field.label }}</b>
-      </label>
+      <label for="id_{{ field.name }}">{{ field.label }}</label>
       {{ field }}
       {% if field.help_text %}<div class="muted help-text">{{ field.help_text|safe }}</div>{% endif %}
     </div>

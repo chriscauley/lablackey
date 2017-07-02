@@ -46,7 +46,7 @@ class PostForm(TaggedModelForm):
   photo = forms.ModelChoiceField(Photo.objects.all(),required=False)
   class Meta:
     model = Post
-    fields = ('title','content','short_content','publish_dt','status','tags','photo')
+    fields = ('title', 'tags','photo', 'status','content','short_content')
   class Media:
     css = {
       'all': ('simplemde/simplemde.min.css',)
@@ -63,16 +63,11 @@ class PostForm(TaggedModelForm):
   def __init__(self, *args, **kwargs):
     # checking for user argument here for a more
     self.user = None
-    self.timezone = None
-    if kwargs.get('instance',None):
-      kwargs['initial'] = kwargs.pop('initial',{})
-      kwargs['initial']['publish_dt'] = kwargs['instance'].publish_dt
 
     if 'user' in kwargs:
       self.user = kwargs.pop('user', None)
     super(PostForm, self).__init__(*args, **kwargs)
     #self.fields['tags'].help_text = "Separate tags with commas. Input will be lowercased."
-    self.fields['publish_dt'].help_text = "<i>YYYY-MM-DD HH:MM</i> (24-hour time)"
     self.fields['photo'].widget=ForeignKeyRawIdWidget(Post._meta.get_field("photo").rel,admin.site)
     # add span class to charfields
     for field in self.fields.values():

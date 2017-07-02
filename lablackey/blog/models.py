@@ -3,6 +3,7 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.template.defaultfilters import slugify, striptags
+from django.utils import timezone
 
 from tagging.registry import register as tagging_register
 
@@ -34,7 +35,7 @@ class Post(PhotosMixin,UserModel):
   status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=0)
   template = models.CharField(max_length=64,choices=TEMPLATE_CHOICES,default=TEMPLATE_CHOICES[0][0])
   post_type = models.CharField(max_length=64,choices=POST_TYPES,default=POST_TYPES[0][0])
-  publish_dt = models.DateTimeField("Publish On",null=True)
+  publish_dt = models.DateTimeField("Publish On",null=True,default=timezone.now)
   create_dt = models.DateTimeField(auto_now_add=True)
   update_dt = models.DateTimeField(auto_now=True)
   _h = "Featured blogs must have a photo or they won't appear at all."

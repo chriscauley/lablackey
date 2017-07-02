@@ -7,7 +7,7 @@ if (document.querySelector("#blogForm #id_content")) {
         cm.replaceSelection(result.shortcode);
       })
     },
-    className: "fa fa-star",
+    className: "fa fa-image",
     title: "Custom Button",
   };
   new SimpleMDE({

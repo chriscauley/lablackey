@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.template.defaultfilters import slugify, striptags
 
-from tagging.registry import register
+from tagging.registry import register as tagging_register
 
 from .templatetags.short_codes import explosivo
 from lablackey.db.models import UserModel
@@ -66,6 +66,8 @@ class Post(PhotosMixin,UserModel):
   @models.permalink
   def get_absolute_url(self):
     return ("post_detail", [self.id, slugify(self.title)])
+
+tagging_register(Post)
 
 class PressItem(models.Model):
   title = models.CharField(max_length=64)

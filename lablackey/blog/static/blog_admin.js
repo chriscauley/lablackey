@@ -20,24 +20,6 @@ $(".media-item a").click(function(){
     return false;
 });
 
-/**
-* Auto-slug generation
-*/
-function write_slug(value) {
-    value = value.replace(/[^\w]+/ig,'-');
-    value = value.toLowerCase();
-    value = value.substring(0, 65);
-
-    if (f_slug.val().length  <= 0) {
-        f_slug.val(value);
-        el_slug_helper.html(value);
-    }
-}
-
-f_title.blur(function() {
-    var value = $(this).val();
-    write_slug(value);
-});
 
 /**
 * Tooltips
@@ -77,3 +59,28 @@ $(document).bind('keydown', 'ctrl+shift+q', query_preview);
 f_title.bind('keydown', 'ctrl+shift+q', query_preview);
 f_content.bind('keydown', 'ctrl+shift+q', query_preview);
 f_slug.bind('keydown', 'ctrl+shift+q', query_preview);
+
+if (document.querySelector("#blogForm #id_content")) {
+  var insert_photo = {
+    name: "insert-photo",
+    action: function customFunction(editor){
+      var cm = editor.codemirror;
+      insertImage(cm.getSelection(),function(result) {
+        cm.replaceSelection(result.shortcode);
+      })
+    },
+    className: "fa fa-star",
+    title: "Custom Button",
+  };
+  new SimpleMDE({
+    element: document.querySelector("textarea"),
+    spellChecker: false,
+    toolbar: [
+      'bold','italic','heading','|',
+      'quote','unordered-list','ordered-list','|',
+      'link', insert_photo, "|",
+      'preview','side-by-side','fullscreen',"|",
+    ],
+  });
+};
+

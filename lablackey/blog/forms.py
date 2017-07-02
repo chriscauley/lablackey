@@ -9,10 +9,9 @@ from media.models import Photo
 
 import datetime
 
+from lablackey.forms import RequestModelForm
 from tagging.forms import TagField
 from tagging.models import Tag
-
-from wmd.widgets import MarkDownInput
 
 class TaggedModelForm(forms.ModelForm):
   """Provides an easy mixin for adding tags using django-tagging"""
@@ -32,12 +31,27 @@ class TaggedModelForm(forms.ModelForm):
   class Meta:
     abstract = True
 
-class PostForm(forms.ModelForm): #TaggedModelForm):
-  content = forms.CharField(widget=MarkDownInput(),required=False)
+class NewPostForm(RequestModelForm):
+  field_overrides = {'content': 'simplemde-input'}
+  class Media:
+    css = {
+      'all': ('simplemde/simplemde.min.css',)
+    }
+    js = ['simplemde/simplemde.min.js']
+  class Meta:
+    fields = ('title','content','short_content','publish_dt','status','photo')
+    model = Post
+
+class PostForm(TaggedModelForm):
   photo = forms.ModelChoiceField(Photo.objects.all(),required=False)
   class Meta:
     model = Post
-    fields = ('title','content','short_content','publish_dt','status','photo')
+    fields = ('title','content','short_content','publish_dt','status','tags','photo')
+  class Media:
+    css = {
+      'all': ('simplemde/simplemde.min.css',)
+    }
+    js = ['simplemde/simplemde.min.js']
 
   def save(self,*args,**kwargs):
     try:

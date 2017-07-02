@@ -24,6 +24,7 @@ def form_to_schema(form):
   schema = []
   initial = {}
   instance = getattr(form,'instance',None)
+  field_overrides = getattr(form,'field_overrides',{})
   for name,field in form.fields.items():
     json = field.widget.attrs
     json.update({
@@ -37,18 +38,24 @@ def form_to_schema(form):
     if not json['help_text'] and hasattr(form,"Meta"):
       json['help_text'] = form.Meta.model._meta.get_field(name).help_text
     if hasattr(field,'choices'):
-      json['choices'] = field.choices
+      json['choices'] = [c for c in field.choices]
     if isinstance(field.widget,forms.widgets.RadioSelect):
       json['type'] = 'radio'
     if isinstance(field.widget,forms.PasswordInput):
       json['type'] = 'password'
+    if name in field_overrides:
+      json['type'] = field_overrides[name]
     schema.append(json)
-  return {
+  out = {
     'form_title': getattr(form,"form_title",None),
     'schema': schema,
     'initial': initial,
-    'errors':   { k: e.get_json_data()[0]['message'] for k,e in form.errors.items() } or None,
+    'errors': { k: e.get_json_data()[0]['message'] for k,e in form.errors.items() } or None,
   }
+  if hasattr(form,'Media'):
+    out['css'] = getattr(form.Media,'css',[])
+    out['js'] = getattr(form.Media,'js',[])
+  return out
 
 def model_to_schema(model):
   schema = []

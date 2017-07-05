@@ -74,6 +74,10 @@ def posts_by_tag(request,name):
   return TemplateResponse(request,"blog/posts_by_tag.html",values)
 
 def post_redirect(request,y,m,d,slug):
+  """
+  redirect for old urls, depracated 7/17
+  I believe this is a TXRX feature and should be moved into TXRX app when it is made.
+  """
   date = datetime.datetime.strptime('%s-%s-%s'%(y,m,d),'%Y-%m-%d').date()
   posts = Post.objects.filter(publish_dt__gte=date,publish_dt__lte=date+datetime.timedelta(1))
   if posts.count() == 1: # found it
@@ -84,5 +88,4 @@ def post_redirect(request,y,m,d,slug):
   else:
     #mail_admins('unable to find blog post',request.path)
     raise Http404("Unable to find matching blog article.")
-  kwargs = {'username': post.id,'slug': post.slug}
-  return HttpResponseRedirect(reverse('post_detail',kwargs=kwargs))
+  return HttpResponseRedirect(reverse('post_detail',args=[post.id,post.slug]))

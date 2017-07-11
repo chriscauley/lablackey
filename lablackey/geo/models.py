@@ -5,6 +5,7 @@ from localflavor.us.models import USStateField
 from .widgets import LocationField
 from lablackey.decorators import cached_property
 
+from jsonfield import JSONField
 import json
 
 try:
@@ -46,6 +47,7 @@ class Location(GeoModel):
   address2 = models.CharField(max_length=64,null=True,blank=True)
   city = models.ForeignKey(City,default=1)
   zip_code = models.IntegerField(default=77007)
+  extra = JSONField(default=dict,blank=True)
   dxf = models.FileField(upload_to="floorplans",null=True,blank=True)
   __unicode__ = lambda self: self.name
   def save(self,*args,**kwargs):

@@ -15,16 +15,22 @@ class RequestModelForm(forms.ModelForm):
   example_form = RequestModelForm(request,initial={'city':'Houston'})
   user = example_form.request.user
   """
+  is_user_form = False
   def __init__(self,request,*args,**kwargs):
-    data = request.POST or request.GET or None
-    files = request.FILES or None
-    super(RequestModelForm,self).__init__(data,files,*args,**kwargs)
     self.request = request
+    super(RequestModelForm,self).__init__(self.request.POST or None,self.request.FILES or None,*args,**kwargs)
+    self.request = request
+  def save(self,*args,**kwargs):
+    commit = kwargs.pop("commit",True)
+    kwargs['commit'] = False
+    super(RequestModelForm,self).save(*args,**kwargs)
+    if self.is_user_form and not self.instance.user:
+      self.instance.user = self.request.user
+    if commit:
+      self.instance.save()
 
 class RequestForm(forms.Form):
   """ Same as above but inherits from Form instead of ModelForm"""
   def __init__(self,request,*args,**kwargs):
-    data = request.POST or request.GET or None
-    files = request.FILES or None
-    super(RequestForm,self).__init__(data,files,*args,**kwargs)
     self.request = request
+    super(RequestForm,self).__init__(self.request.POST or None,self.request.FILES or None,*args,**kwargs)

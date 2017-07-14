@@ -113,6 +113,7 @@ class Room(models.Model):
   @property
   def as_json(self):
     return {
+      'id': self.id,
       'name': self.name,
       'roomgroup_id': self.roomgroup_id,
       'short_name': self.get_short_name(),

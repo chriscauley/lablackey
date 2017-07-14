@@ -22,7 +22,7 @@ FIELD_MAP = {
 
 def form_to_schema(form):
   schema = []
-  initial = {}
+  initial = form.initial
   instance = getattr(form,'instance',None)
   field_overrides = getattr(form,'field_overrides',{})
   for name,field in form.fields.items():
@@ -33,14 +33,16 @@ def form_to_schema(form):
       'label': field.label,
       'help_text': field.help_text
     })
-    if instance:
-      initial[name] = field.initial or getattr(instance,name)
-    if not json['help_text'] and hasattr(form,"Meta"):
+    if not json['help_text'] and hasattr(form,"Meta") and name in form.Meta.model._meta.fields:
       json['help_text'] = form.Meta.model._meta.get_field(name).help_text
+    if isinstance(field.widget, forms.widgets.HiddenInput):
+      json['type'] = "hidden"
     if hasattr(field,'choices'):
       json['choices'] = [c for c in field.choices]
     if isinstance(field.widget,forms.widgets.RadioSelect):
       json['type'] = 'radio'
+    if isinstance(field.widget,forms.widgets.CheckboxInput):
+      json['type'] = 'checkbox'
     if isinstance(field.widget,forms.PasswordInput):
       json['type'] = 'password'
     if name in field_overrides:
@@ -51,6 +53,8 @@ def form_to_schema(form):
     'schema': schema,
     'initial': initial,
     'errors': { k: e.get_json_data()[0]['message'] for k,e in form.errors.items() } or None,
+    'rendered_content': getattr(form,"rendered_content",None),
+    'form_title': getattr(form,"form_title",None)
   }
   if hasattr(form,'Media'):
     out['css'] = getattr(form.Media,'css',[])

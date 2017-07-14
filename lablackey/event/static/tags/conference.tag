@@ -1,70 +1,78 @@
 <conference-days>
   <ul class="tabs z-depth-1 tabs-fixed-width">
-    <li class="tab" each={ uR.conf.days }>
-      <a onclick={ select } class={ active: active }>{ verbose }</a></li>
+    <li class="tab" each={ days }>
+      <a onclick={ select } class={ active: active }>{ start.hdate() }</a></li>
   </ul>
-  <div class="tab-content { active: active }" each={ uR.conf.days }>
-    <div each={ block in blocks } class="block">
-      <div class="occurrence" each={ block }>
-        <div class="occurrence card">
-          <div class="card-content">
-            <div class="name">{ name }</div>
-            <div if={ event.owners.length }>by { event.owners[0].first_name } { event.owners[0].last_name }</div>
-            <div class="time">{ time_string }</div>
-          </div>
+  <div class="tab-content { active: active }" each={ days }>
+    <div class="column" each={ rooms }>
+      <div class="room">{ name }</div>
+      <div class="occurrence card " each={ occurrences }>
+        <div class="card-content">
+          <div class="name">{ artist.name }</div>
+          <div class="time">{ start.htime() }</div>
         </div>
       </div>
-      <hr/>
     </div>
   </div>
 
   select(e) {
-    uR.forEach(uR.conf.days,function(d,i) {
+    uR.forEach(this.days,function(d,i) {
       d.active = e.item.index == i;
     });
     this.update();
   }
 
   this.on("mount",function() {
+    var $date = (s) => moment(new Date(s)).format("YYYY-MM-DD");
+    function sortObject(obj,attr_name) {
+      attr_name = attr_name || "_sort_attr";
+      var keys = Object.keys(obj);
+      keys.sort();
+      return keys.map(function(key) {
+        obj[key][attr_name] = key;
+        return obj[key];
+      })
+    }
     this.ajax({
       url: '/event/conference.json',
       success: function(data) {
-        uR.conf = {};
-        uR.conf.days = [];
+        var maps = {};
         var days_map = {};
-        var owners_map = {};
-        var events = {};
-        var block, last_start;
-        uR.forEach(data.owners,function(owner) { owners_map[owner.id] = owner });
-        uR.forEach(data.events,function(event) {
-          event.owners = event.owner_ids.map(function(id) { return owners_map[id]});
-          events[event.id] = event;
+        uR.forEach(['rooms','events','artists'],function(attr) {
+          maps[attr] = {}
+          uR.forEach(data[attr],function(obj) {
+            maps[attr][obj.id] = obj;
+          })
         });
-        uR.forEach(data.eventoccurrences,function(occ) {
-          occ.event = events[occ.event_id];
-          occ.start_moment = moment(occ.start);
-          occ.end_moment = moment(occ.end);
-          var day = occ.start_moment.format("YYYY-MM-DD");
-          occ.time_string = uR.formatTimeRange(occ.start,occ.end);
-          if (!days_map[day]) {
-            block = undefined;
-            days_map[day] = {
-              verbose: occ.start_moment.format("dddd Do"),
-              blocks: [],
-            }
+        uR.forEach(data.eventoccurrences,function(occurrence) {
+          var _d = occurrence.start.date();
+          days_map[_d] = days_map[_d] || {
+            occurrences: [],
+            moment: moment(new Date(_d)),
+            rooms: [],
           }
-          if (last_start != occ.start_moment.format("HHmm")) {
-            last_start = occ.start_moment.format("HHmm");
-            if (block) { days_map[day].blocks.push(block) }
-            block = [];
-          }
-          block.push(occ);
+          occurrence.event = maps.events[occurrence.event_id];
+          occurrence.room = maps.rooms[occurrence.event.room_id];
+          occurrence.artist = occurrence.extra && maps.artists[occurrence.extra.artist];
+          days_map[_d].verbose = days_map[_d].moment.format("MMM Do");
+          days_map[_d].occurrences.push(occurrence);
         });
-        for (key in days_map) { uR.conf.days.push(days_map[key]); }
-        uR.forEach(uR.conf.days,function(d,i) { d.index = i; });
-        uR.conf.days[0].active = true;
+        this.days = sortObject(days_map,"date");
+        uR.forEach(this.days,function(day,i) {
+          day.index = i;
+          day.occurrences.sort((o) => o.start)
+          day.start = day.occurrences[0].start;
+          day.sorted_occurrences = [];
+          data.rooms.map(function(room) {
+            var _r = {};
+            uR.extend(_r,room);
+            _r.occurrences = day.occurrences.filter((o) => o.room.id==_r.id );
+            _r.occurrences.length && day.rooms.push(_r);
+            _r.occurrences.sort((o) => o.start)
+          });
+        });
+        this.days[0].active = true;
       }
     });
   });
-
 </conference-days>

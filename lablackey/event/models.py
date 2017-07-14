@@ -15,6 +15,7 @@ from lablackey.geo.models import Room
 
 from dateutil import tz
 import datetime, sys, math, arrow, six, calendar
+from jsonfield import JSONField
 
 def print_time(t):
   if t: return t.strftime('%I:%M %P')
@@ -54,7 +55,7 @@ class Event(PhotosMixin,JsonModel):
   _ht = "Number of days before event when RSVP is cut off (eg 0.5 means \"You must rsvp 12 hours before this event\")"
   rsvp_cutoff = models.FloatField(default=0,help_text=_ht)
   max_rsvp = models.IntegerField(default=128)
-  access = models.ForeignKey(Access)
+  access = models.ForeignKey(Access,null=True,blank=True)
   _ht = "If true, members cannot RSVP unless they have been through the orientation."
   orientation_required = models.BooleanField(default=False,help_text=_ht)
   owner_ids = property(lambda self: list(self.eventowner_set.all().values_list("user_id",flat=True)))
@@ -298,6 +299,7 @@ class EventOccurrence(PhotosMixin,OccurrenceModel):
   event = models.ForeignKey(Event)
   eventrepeat = models.ForeignKey(EventRepeat,models.SET_NULL,null=True,blank=True) # for when eventrepeat changes
   publish_dt = models.DateTimeField(default=datetime.datetime.now) # for rss feed
+  extra = JSONField(default=dict,blank=True)
   get_admin_url = lambda self: "/admin/event/event/%s/"%self.event.id
   name_override = models.CharField(null=True,blank=True,max_length=128)
   name = property(lambda self: self.name_override or self.event.name)
@@ -340,6 +342,7 @@ class EventOccurrence(PhotosMixin,OccurrenceModel):
       'start': str(self.start),
       'end': str(self.end),
       'event_id': self.event_id,
+      'extra': self.extra,
     }
   class Meta:
     ordering = ('start',)

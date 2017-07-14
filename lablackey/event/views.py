@@ -14,6 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .utils import make_ics,ics2response
 from .models import Event, EventOccurrence, RSVP, CheckIn, EventRepeat
+from lablackey.geo.models import Room
+from lablackey.loader import load_class
 
 import datetime, json, arrow, calendar
 
@@ -193,9 +195,8 @@ def conference_json(request):
   out = {
     'events': [e.as_json for e in events],
     'eventoccurrences': [o.as_json for o in EventOccurrence.objects.filter(event__in=events)],
-    'owners': [
-      {k: getattr(u,k) for k in ['username','first_name','last_name','id']}
-      for u in get_user_model().objects.filter(id__in=event_owners)
-    ],
+    'rooms': [r.as_json for r in Room.objects.all()],
   }
+  if hasattr(settings,'CONFERENCE_JSON_EXTRA'):
+    out.update(load_class(settings.CONFERENCE_JSON_EXTRA)())
   return JsonResponse(out)

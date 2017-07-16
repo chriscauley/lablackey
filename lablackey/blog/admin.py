@@ -21,6 +21,10 @@ class PostAdmin(RawMixin,admin.ModelAdmin):
   search_fields = ('content','title')
   raw_id_fields = ('photo','user')
   exclude = ("template",)
+  fieldsets = [
+    (None,{'fields': [('user','photo'),('title','subtitle'),'content','status','publish_dt']}),
+    ('Meta',{'fields': ['post_type','url','featured','short_content'],'classes': ('collapse',)}),
+  ]
 
 admin.site.register(PressItem)
 #admin.site.register(Banner)

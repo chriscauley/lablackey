@@ -29,7 +29,7 @@
       <header>
         <ur-nav>{% include "_nav.html" %}</ur-nav>
       </header>
-      <div id="content">{% block content %}{% endblock %}</div>
+      <div id="content">{% block content %}{% endblock %}{% block main %}{% endblock %}</div>
       <div id="alert-div"></div>
       <footer></footer>
     </div>

@@ -29,6 +29,7 @@ class Post(PhotosMixin,UserModel):
   )
 
   title = models.CharField(max_length=200, blank=True)
+  subtitle = models.CharField(max_length=200, blank=True,null=True)
   slug = property(lambda self: slugify(self.title))
   content = models.TextField(blank=True)
   _ht = "A short description to show in front page feed."
@@ -37,6 +38,8 @@ class Post(PhotosMixin,UserModel):
   status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=0)
   template = models.CharField(max_length=64,choices=TEMPLATE_CHOICES,default=TEMPLATE_CHOICES[0][0])
   post_type = models.CharField(max_length=64,choices=POST_TYPES,default=POST_TYPES[0][0])
+  _ht = "Only used for type flatpage. Url should start and end with \"/\""
+  url = models.CharField(max_length=200,blank=True,null=True,help_text=_ht)
   publish_dt = models.DateTimeField("Publish On",null=True,default=timezone.now)
   create_dt = models.DateTimeField(auto_now_add=True)
   update_dt = models.DateTimeField(auto_now=True)
@@ -44,7 +47,7 @@ class Post(PhotosMixin,UserModel):
   featured = models.BooleanField(default=False,help_text=_h)
   photo = models.ForeignKey(Photo,null=True,blank=True)
   description = property(lambda self: explosivo(self.content))
-  lite_fields = ['title','url','photo_url']
+  lite_fields = ['title','url','photo_url','id']
   photo_url = property(lambda self: self.first_photo.file.url if self.first_photo else None)
   objects = models.Manager()
 
@@ -56,19 +59,14 @@ class Post(PhotosMixin,UserModel):
     ordering = ('-featured','-publish_dt',)
   __unicode__ = lambda self: self.title or 'Untitled'
 
-  @property
-  def url(self):
-    return '%s%s' % (settings.SITE_URL, self.get_absolute_url(),)
-
   def save(self, *args, **kwargs):
     super(Post, self).save(*args, **kwargs)
 
   #depracate please
   list_users = property(lambda self: [self.user])
 
-  @models.permalink
   def get_absolute_url(self):
-    return ("post_detail", [self.id, self.slug])
+    return self.url or reverse("post_detail", args=[self.id, self.slug])
 
 tagging_register(Post)
 

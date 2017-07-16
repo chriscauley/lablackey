@@ -4,6 +4,7 @@ from localflavor.us.models import USStateField
 
 from .widgets import LocationField
 from lablackey.decorators import cached_property
+from lablackey.db.models import JsonModel
 
 from jsonfield import JSONField
 import json
@@ -13,7 +14,7 @@ try:
 except ImportError:
   ezdxf = None
 
-class GeoModel(models.Model):
+class GeoModel(JsonModel):
   latlon = LocationField(max_length=500,null=True,blank=True) # stored as lat,lon
   _lat = property(lambda self: float(self.latlon.split(",")[0]))
   _lon = property(lambda self: float(self.latlon.split(",")[1]))
@@ -43,6 +44,7 @@ class Location(GeoModel):
   _ht = "Optional. Alternative name for the calendar."
   short_name = models.CharField(max_length=64,null=True,blank=True,help_text=_ht)
   get_short_name = lambda self: self.short_name or self.name
+  _short_name = property(get_short_name)
   address = models.CharField(max_length=64,null=True,blank=True)
   address2 = models.CharField(max_length=64,null=True,blank=True)
   city = models.ForeignKey(City,default=1)
@@ -50,17 +52,13 @@ class Location(GeoModel):
   extra = JSONField(default=dict,blank=True)
   dxf = models.FileField(upload_to="floorplans",null=True,blank=True)
   __unicode__ = lambda self: self.name
+  city_name = property(lambda self: self.city.name)
+  state = property(lambda self: self.city.state)
   def save(self,*args,**kwargs):
     super(Location,self).save(*args,**kwargs)
     if self.dxf:
       self.generate_dxf_entities()
-  @property
-  def as_json(self):
-    return {
-      'id': self.id,
-      'name': self.name,
-      'dxfs': [dxf.as_json for dxf in DXFEntity.objects.all()],
-    }
+  json_fields = ['id','name','lat','lon','address','address2','city_name','zip_code','state','_short_name']
   def generate_dxf_entities(self):
     if not ezdxf:
       return

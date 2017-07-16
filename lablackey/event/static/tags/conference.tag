@@ -9,7 +9,7 @@
       <div class="occurrence card " each={ occurrences }>
         <div class="card-content">
           <div class="name">{ artist.name }</div>
-          <div class="time">{ start.htime() }</div>
+          <div class="time">{ start.htime() } - { end.htime() }</div>
         </div>
       </div>
     </div>
@@ -23,7 +23,6 @@
   }
 
   this.on("mount",function() {
-    var $date = (s) => moment(new Date(s)).format("YYYY-MM-DD");
     function sortObject(obj,attr_name) {
       attr_name = attr_name || "_sort_attr";
       var keys = Object.keys(obj);

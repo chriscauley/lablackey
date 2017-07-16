@@ -104,10 +104,10 @@ def get_schema(request,app_name,model_name):
   model = app.get_model(model_name)
   return JsonResponse({'schema': model_to_schema(model) })
 
-def get_form_schema(request,app_name,form_name):
+def get_form_schema(request,app_name,form_name,id=None):
   form = load_class("%s.forms.%s"%(app_name,form_name))
   args = [getattr(request,request.method) or None] # GET or POST
-  kwargs = {'instance': getattr(form,'get_instance',lambda *a,**k: None)(request)} # for unrest like forms
+  kwargs = {'instance': getattr(form,'get_instance',lambda *a,**k: None)(request,id)} # for unrest like forms
   if issubclass(form,RequestModelForm):
     form = form(request,**kwargs)
   elif issubclass(form,RequestForm):
@@ -119,6 +119,7 @@ def get_form_schema(request,app_name,form_name):
   if form.is_valid():
     form.save()
     return JsonResponse({
-      'ur_route_to': getattr(form,"success_url",None) or request.POST.get("next","/")
+      'ur_route_to': getattr(form,"success_url",None) or request.POST.get("next",None),
+      'messages': [{'level': 'success', 'body': "Form has been saved." }],
     })
   return JsonResponse(form_to_schema(form),encoder=LazyEncoder)

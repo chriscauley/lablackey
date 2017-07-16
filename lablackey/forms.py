@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django import forms
+from django.shortcuts import get_object_or_404
 
 class UserEmailForm(forms.ModelForm):
   class Meta:
@@ -28,6 +29,11 @@ class RequestModelForm(forms.ModelForm):
       self.instance.user = self.request.user
     if commit:
       self.instance.save()
+  @classmethod
+  def get_instance(self,request,id=None):
+    if not id:
+      return
+    return get_object_or_404(self.Meta.model,id=id)
 
 class RequestForm(forms.Form):
   """ Same as above but inherits from Form instead of ModelForm"""

@@ -73,7 +73,7 @@ class Event(PhotosMixin,JsonModel):
 
   get_short_name = lambda self: self.short_name or self.name
   def get_absolute_url(self):
-    return reverse("event_detail",args=[self.pk,slugify(self.name)])
+    return reverse("event_detail",args=[self.pk,slugify(self.name or None)])
   @property
   def all_occurrences(self):
     return self.eventoccurrence_set.all()

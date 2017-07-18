@@ -20,7 +20,6 @@ class RequestModelForm(forms.ModelForm):
   def __init__(self,request,*args,**kwargs):
     self.request = request
     super(RequestModelForm,self).__init__(self.request.POST or None,self.request.FILES or None,*args,**kwargs)
-    self.request = request
   def save(self,*args,**kwargs):
     commit = kwargs.pop("commit",True)
     kwargs['commit'] = False
@@ -29,6 +28,7 @@ class RequestModelForm(forms.ModelForm):
       self.instance.user = self.request.user
     if commit:
       self.instance.save()
+    return self.instance
   @classmethod
   def get_instance(self,request,id=None):
     if not id:

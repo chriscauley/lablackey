@@ -25,6 +25,7 @@ def form_to_schema(form):
   initial = form.initial
   instance = getattr(form,'instance',None)
   field_overrides = getattr(form,'field_overrides',{})
+  model = hasattr(form,"Meta") and form.Meta.model
   for name,field in form.fields.items():
     json = field.widget.attrs
     json.update({
@@ -33,8 +34,8 @@ def form_to_schema(form):
       'label': field.label,
       'help_text': field.help_text
     })
-    if not json['help_text'] and hasattr(form,"Meta") and name in form.Meta.model._meta.fields:
-      json['help_text'] = form.Meta.model._meta.get_field(name).help_text
+    if not json['help_text'] and model and name in model._meta.fields:
+      json['help_text'] = model._meta.get_field(name).help_text
     if isinstance(field.widget, forms.widgets.HiddenInput):
       json['type'] = "hidden"
     if hasattr(field,'choices'):
@@ -47,6 +48,8 @@ def form_to_schema(form):
       json['type'] = 'password'
     if name in field_overrides:
       json['type'] = field_overrides[name]
+    if not json.get('type',None) and json.get('choices',None):
+      json['type'] = 'select'
     schema.append(json)
   out = {
     'form_title': getattr(form,"form_title",None),
@@ -59,6 +62,9 @@ def form_to_schema(form):
   if hasattr(form,'Media'):
     out['css'] = getattr(form.Media,'css',[])
     out['js'] = getattr(form.Media,'js',[])
+  if 'ur_page' in form.request.GET:
+    if hasattr(form,'get_page_json'):
+      out['ur_pagination'] = form.get_page_json(form.request.GET['ur_page'])
   return out
 
 def model_to_schema(model):

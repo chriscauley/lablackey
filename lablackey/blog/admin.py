@@ -8,7 +8,6 @@ from .models import Post, Banner, PressItem
 
 from lablackey.db.admin import RawMixin
 from lablackey.db.forms import StaffMemberForm
-from wmd.widgets import AdminMarkDownInput
 
 from lablackey.db.models import register
 
@@ -50,7 +49,6 @@ if 'django.contrib.flatpages' in settings.INSTALLED_APPS:
     def __init__(self, *args, **kwargs):
       super(FlatPageForm, self).__init__(*args, **kwargs)
       self.fields['template_name'].widget = forms.Select(choices=TEMPLATE_CHOICES)
-      self.fields['content'].widget = AdminMarkDownInput()
     class Meta:
       model = FlatPage
       exclude = ()

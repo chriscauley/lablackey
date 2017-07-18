@@ -240,7 +240,7 @@ class EventRepeat(JsonMixin,models.Model):
           end_time=self.end_time,
         )
 
-class OccurrenceModel(models.Model):
+class OccurrenceModel(JsonModel):
   """
   The goal is to eventually make this very general so that it can reach accross many models to be put into a feed.
   Occurrences need a start (DateTime), end (DateTime, optional), name (str), description (str), and get_absolute_url (str).
@@ -248,7 +248,6 @@ class OccurrenceModel(models.Model):
   start = models.DateTimeField()
   end_time = models.TimeField()
   __unicode__ = lambda self: "%s - %s"%(self.name,date(self.start,'l F d, Y'))
-  created = models.DateTimeField(auto_now_add=True)
 
   get_ics_url = lambda self: reverse_ics(self)
 
@@ -301,6 +300,7 @@ class EventOccurrence(PhotosMixin,OccurrenceModel):
   publish_dt = models.DateTimeField(default=datetime.datetime.now) # for rss feed
   extra = JSONField(default=dict,blank=True)
   get_admin_url = lambda self: "/admin/event/event/%s/"%self.event.id
+  ur_admin = property(lambda self: "/forms/main.EventForm/%s/"%self.id)
   name_override = models.CharField(null=True,blank=True,max_length=128)
   name = property(lambda self: self.name_override or self.event.name)
   short_name = property(lambda self: self.name_override or self.event.get_short_name())

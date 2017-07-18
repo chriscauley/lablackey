@@ -29,6 +29,8 @@ def lite_json(self):
   out = { 'id': self.id, 'title': self.__unicode__() }
   if hasattr(self,'get_absolute_url'):
     out['url'] = self.get_absolute_url()
+  if hasattr(self,'ur_admin'):
+    out['ur_admin'] = self.ur_admin
   for attr in getattr(self,'lite_fields',[]):
     out[attr] = getattr(self,attr)
   return out

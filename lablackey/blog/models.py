@@ -47,7 +47,7 @@ class Post(PhotosMixin,UserModel):
   featured = models.BooleanField(default=False,help_text=_h)
   photo = models.ForeignKey(Photo,null=True,blank=True)
   description = property(lambda self: explosivo(self.content))
-  lite_fields = ['title','url','photo_url','id']
+  lite_fields = ['title','photo_url','id']
   photo_url = property(lambda self: self.first_photo.file.url if self.first_photo else None)
   objects = models.Manager()
 
@@ -65,8 +65,8 @@ class Post(PhotosMixin,UserModel):
   #depracate please
   list_users = property(lambda self: [self.user])
 
-  def get_absolute_url(self):
-    return self.url or reverse("post_detail", args=[self.id, self.slug])
+  ur_admin = property(lambda self: "/forms/blog.PostForm/%s/"%self.pk)
+  get_absolute_url = lambda self: self.url or reverse("post_detail", args=[self.id, self.slug])
 
 tagging_register(Post)
 

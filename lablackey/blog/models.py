@@ -65,8 +65,8 @@ class Post(PhotosMixin,UserModel):
   #depracate please
   list_users = property(lambda self: [self.user])
 
-  def get_absolute_url(self):
-    return self.url or reverse("post_detail", args=[self.id, self.slug])
+  ur_admin = property(lambda self: "/forms/blog.PostForm/%s/"%self.pk)
+  get_absolute_url = lambda self: self.url or reverse("post_detail", args=[self.id, self.slug])
 
 tagging_register(Post)
 

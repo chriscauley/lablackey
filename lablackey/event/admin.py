@@ -113,6 +113,8 @@ class EventOccurrenceAdmin(TaggedPhotoAdmin):
   raw_id_fields = ['event']
   list_filter = (FuturePastListFilter,)
   readonly_fields = ['_rsvps','eventrepeat']
+  list_display = ("__unicode__","start","end_time")
+  list_editable = ("start","end_time")
   def _rsvps(self,obj):
     rsvps = RSVP.objects.filter(
       object_id=obj.id,

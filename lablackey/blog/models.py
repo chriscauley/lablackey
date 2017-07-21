@@ -47,7 +47,7 @@ class Post(PhotosMixin,UserModel):
   featured = models.BooleanField(default=False,help_text=_h)
   photo = models.ForeignKey(Photo,null=True,blank=True)
   description = property(lambda self: explosivo(self.content))
-  lite_fields = ['title','url','photo_url','id']
+  lite_fields = ['title','url','photo_url','id','publish_dt']
   photo_url = property(lambda self: self.first_photo.file.url if self.first_photo else None)
   objects = models.Manager()
 

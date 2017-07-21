@@ -13,6 +13,8 @@ from lablackey.decorators import cached_property
 from media.models import Photo, PhotosMixin
 from lablackey.db.models import OrderedModel
 
+from jsonfield import JSONField
+
 TEMPLATE_CHOICES = getattr(settings,"POST_TEMPLATE_CHOICES",['default'])
 
 TEMPLATE_CHOICES = [(t,t) if (not type(t) in [list,tuple]) else t for t in TEMPLATE_CHOICES]
@@ -38,6 +40,7 @@ class Post(PhotosMixin,UserModel):
   status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=0)
   template = models.CharField(max_length=64,choices=TEMPLATE_CHOICES,default=TEMPLATE_CHOICES[0][0])
   post_type = models.CharField(max_length=64,choices=POST_TYPES,default=POST_TYPES[0][0])
+  extra = JSONField(default=dict,blank=True)
   _ht = "Only used for type flatpage. Url should start and end with \"/\""
   url = models.CharField(max_length=200,blank=True,null=True,help_text=_ht)
   publish_dt = models.DateTimeField("Publish On",null=True,default=timezone.now)
@@ -47,7 +50,7 @@ class Post(PhotosMixin,UserModel):
   featured = models.BooleanField(default=False,help_text=_h)
   photo = models.ForeignKey(Photo,null=True,blank=True)
   description = property(lambda self: explosivo(self.content))
-  lite_fields = ['title','url','photo_url','id','publish_dt']
+  lite_fields = ['title','url','photo_url','id','publish_dt','extra']
   photo_url = property(lambda self: self.first_photo.file.url if self.first_photo else None)
   objects = models.Manager()
 

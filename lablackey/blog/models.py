@@ -71,6 +71,10 @@ class Post(PhotosMixin,UserModel):
   ur_admin = property(lambda self: "/forms/blog.PostForm/%s/"%self.pk)
   get_absolute_url = lambda self: self.url or reverse("post_detail", args=[self.id, self.slug])
 
+  @classmethod
+  def get_api_kwargs(cls,request):
+    q = models.Q(status='published',publish_dt__lte=timezone.now()) | models.Q(user=request.user)
+    return [q],{}
 tagging_register(Post)
 
 class PressItem(models.Model):

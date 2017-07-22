@@ -79,6 +79,7 @@ class JsonMixin(object):
   """
   lite_json = property(lite_json)
   as_json = property(as_json)
+  get_api_kwargs = classmethod(lambda cls,request: ([],{}))
 
 class JsonModel(models.Model,JsonMixin):
   created = models.DateTimeField(auto_now_add=True)

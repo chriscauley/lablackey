@@ -50,7 +50,7 @@ class Post(PhotosMixin,UserModel):
   featured = models.BooleanField(default=False,help_text=_h)
   photo = models.ForeignKey(Photo,null=True,blank=True)
   description = property(lambda self: explosivo(self.content))
-  lite_fields = ['title','url','photo_url','id','publish_dt','extra']
+  lite_fields = ['title', 'photo_url', 'id', 'publish_dt', 'extra']
   photo_url = property(lambda self: self.first_photo.file.url if self.first_photo else None)
   objects = models.Manager()
 
@@ -70,7 +70,6 @@ class Post(PhotosMixin,UserModel):
 
   ur_admin = property(lambda self: "/forms/blog.PostForm/%s/"%self.pk)
   get_absolute_url = lambda self: self.url or reverse("post_detail", args=[self.id, self.slug])
-
   @classmethod
   def get_api_kwargs(cls,request):
     q = models.Q(status='published',publish_dt__lte=timezone.now()) | models.Q(user=request.user)

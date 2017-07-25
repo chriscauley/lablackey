@@ -22,7 +22,7 @@ class PostAdmin(RawMixin,admin.ModelAdmin):
   exclude = ("template",)
   fieldsets = [
     (None,{'fields': [('user','photo'),('title','subtitle'),'content','status','publish_dt']}),
-    ('Meta',{'fields': ['post_type','url','featured','short_content'],'classes': ('collapse',)}),
+    ('Meta',{'fields': ['post_type','url','featured','short_content','extra'],'classes': ('collapse',)}),
   ]
 
 admin.site.register(PressItem)

@@ -24,6 +24,7 @@ POST_TYPES = [
 ]
 
 class Post(PhotosMixin,UserModel):
+  public = True
   user_can_edit = True
   STATUS_CHOICES = (
     ('draft', 'Draft'),
@@ -51,6 +52,7 @@ class Post(PhotosMixin,UserModel):
   photo = models.ForeignKey(Photo,null=True,blank=True)
   description = property(lambda self: explosivo(self.content))
   lite_fields = ['title', 'photo_url', 'id', 'publish_dt', 'extra']
+  json_fields = ['title','template','content','short_content','publish_dt','post_type','subtitle','extra','photo_url']
   photo_url = property(lambda self: self.first_photo.file.url if self.first_photo else None)
   objects = models.Manager()
 
@@ -72,7 +74,9 @@ class Post(PhotosMixin,UserModel):
   get_absolute_url = lambda self: self.url or reverse("post_detail", args=[self.id, self.slug])
   @classmethod
   def get_api_kwargs(cls,request):
-    q = models.Q(status='published',publish_dt__lte=timezone.now()) | models.Q(user=request.user)
+    q = models.Q(status='published',publish_dt__lte=timezone.now())
+    if request.user.is_authenticated():
+      q = models.Q(status='published',publish_dt__lte=timezone.now()) | models.Q(user=request.user)
     return [q],{}
 tagging_register(Post)
 

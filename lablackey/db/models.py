@@ -49,8 +49,9 @@ def register(model,**kwargs):
   kwargs2.update(kwargs)
   kwargs = kwargs2
   for key,value in kwargs.items():
-    setattr(model,key,value)
-  if not model.json_fields:
+    if not getattr(model,key,None):
+      setattr(model,key,value)
+  if not model().json_fields:
     for field in model._meta.get_fields():
       if isinstance(field,models.ManyToOneRel):
         continue
@@ -215,7 +216,7 @@ class UserModel(JsonModel):
   can_edit_own = False
   private = False
   def row_permissions(self,user):
-    return self.public or user.is_superuser or (user == self.user)
+    return getattr(self,'public',None) or user.is_superuser or (user == self.user)
   class Meta:
     abstract = True
 

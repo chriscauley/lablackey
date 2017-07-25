@@ -2,12 +2,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}{{ settings.SITE_NAME }}{% endblock %}</title>
     <meta name="viewport" content="initial-scale=1">
     <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
-    <meta name="description" content="{% block meta-description %}{% endblock %}">
-    <meta name="author" content="{% block meta-author %}chriscauley{% endblock %}">
     <meta name="application-name" content="">
+
+    <meta property="og:title" content="{{ settings.META.TITLE }}">
+    <meta property="og:image" content="{{ settings.META.IMAGE }}">
+    <meta property="og:description" content="{{ settings.META.DESCRIPTION }}">
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <script>var uR = { _ready: [], ready: function(f) { uR._ready.push(f) } }</script>

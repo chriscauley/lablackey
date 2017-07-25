@@ -9,7 +9,7 @@ except ImportError:
   ContainerInline = None
 
 class LocationAdmin(admin.ModelAdmin):
-  fields = ('name','short_name','parent','address','address2','city','zip_code','latlon','dxf')
+  fields = ('name','short_name','parent','address','address2','city','zip_code','latlon','dxf','extra')
 
 class RoomAdmin(admin.ModelAdmin):
   list_display = ('__unicode__','roomgroup','map_key')

@@ -30,10 +30,33 @@ class RequestModelForm(forms.ModelForm):
       self.instance.save()
     return self.instance
   @classmethod
-  def get_instance(self,request,id=None):
+  def get_list_fields(clss,obj):
+    return [
+      unicode(obj),
+    ]
+  @classmethod
+  def get_instance(clss,request,id=None):
     if not id:
       return
-    return get_object_or_404(self.Meta.model,id=id)
+    return get_object_or_404(clss.Meta.model,id=id)
+  @classmethod
+  def get_page_json(clss,page=0):
+    per_page = 100
+    start = int(page)*per_page
+    end = start + per_page
+    results = []
+    for obj in clss.Meta.model.objects.all()[start:end]:
+      out = {
+        'id': obj.id,
+        'url': getattr(obj,'get_absolute_url',lambda: None)(),
+        'ur_admin': getattr(obj,'ur_admin',None),
+        'fields': clss.get_list_fields(obj)
+      }
+      results.append(out)
+    return dict(
+      page=page,
+      results=results,
+    )
 
 class RequestForm(forms.Form):
   """ Same as above but inherits from Form instead of ModelForm"""

@@ -24,7 +24,7 @@ def form_to_schema(form):
   schema = []
   initial = form.initial
   instance = getattr(form,'instance',None)
-  if instance:
+  if instance and instance.pk:
     initial = instance.as_json
     initial.update(getattr(form,'as_json',{}))
   field_overrides = getattr(form,'field_overrides',{})

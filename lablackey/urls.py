@@ -13,8 +13,8 @@ admin.autodiscover()
 import views
 
 urlpatterns = [
-  url(r'^api/schema/([\w\d\.]+)\.([\w\d]+Form)/$',views.get_form_schema),
-  url(r'^api/schema/([\w\d\.]+)\.([\w\d]+Form)/(\d+)/$',views.get_form_schema),
+  url(r'^api/schema/([\w\d\.]+)\.([\w\d]+Form)/$',views.get_form_schema,name="ur_form_add"),
+  url(r'^api/schema/([\w\d\.]+)\.([\w\d]+Form)/(\d+)/$',views.get_form_schema,name="ur_form_schema"),
   url(r'^api/schema/([\w\d]+)\.([\w\d]+)/$',views.get_schema),
   url(r'^form/([\w\d\.]+)([\w\d]+Form)/$',views.render_template,name="ur-form"),
   #url(r'^api/schema/([\w\d]+).([\w\d]+)/$',views.get_schema),

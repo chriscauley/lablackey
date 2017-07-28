@@ -20,6 +20,13 @@ FIELD_MAP = {
   'django_countries.fields.CountryField': { },
 }
 
+TYPES_MAP = [
+  (forms.widgets.HiddenInput, "hidden"),
+  (forms.widgets.RadioSelect, 'radio'),
+  (forms.widgets.CheckboxInput, 'checkbox'),
+  (forms.PasswordInput, 'password'),
+  (forms.Textarea, 'textarea'),
+]
 def form_to_schema(form):
   schema = []
   initial = form.initial
@@ -30,6 +37,8 @@ def form_to_schema(form):
   field_overrides = getattr(form,'field_overrides',{})
   model = hasattr(form,"Meta") and form.Meta.model
   for name,field in form.fields.items():
+    if instance and not name in initial:
+      initial[name] = getattr(instance,name,None)
     json = field.widget.attrs
     json.update({
       'required': field.required,
@@ -37,18 +46,14 @@ def form_to_schema(form):
       'label': field.label,
       'help_text': field.help_text
     })
+    if not 'type' in json:
+      for widget,_type in TYPES_MAP:
+        if isinstance(field.widget,widget):
+          json['type'] = _type
     if not json['help_text'] and model and name in model._meta.fields:
       json['help_text'] = model._meta.get_field(name).help_text
-    if isinstance(field.widget, forms.widgets.HiddenInput):
-      json['type'] = "hidden"
     if hasattr(field,'choices'):
       json['choices'] = [c for c in field.choices]
-    if isinstance(field.widget,forms.widgets.RadioSelect):
-      json['type'] = 'radio'
-    if isinstance(field.widget,forms.widgets.CheckboxInput):
-      json['type'] = 'checkbox'
-    if isinstance(field.widget,forms.PasswordInput):
-      json['type'] = 'password'
     if name in field_overrides:
       json['type'] = field_overrides[name]
     if not json.get('type',None) and json.get('choices',None):

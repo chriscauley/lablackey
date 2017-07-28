@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.urlresolvers import reverse
 from django import forms
 from django.shortcuts import get_object_or_404
 
@@ -17,6 +18,9 @@ class RequestModelForm(forms.ModelForm):
   user = example_form.request.user
   """
   is_user_form = False
+  @property
+  def ur_admin(self):
+    return reverse(args=[self.__module__.replace(".forms","")])
   def __init__(self,request,*args,**kwargs):
     self.request = request
     super(RequestModelForm,self).__init__(self.request.POST or None,self.request.FILES or None,*args,**kwargs)

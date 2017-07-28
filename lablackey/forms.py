@@ -34,6 +34,9 @@ class RequestModelForm(forms.ModelForm):
       self.instance.save()
     return self.instance
   @classmethod
+  def user_is_allowed(clss,request):
+    return request.user.is_authenticated() and request.user.is_superuser
+  @classmethod
   def get_list_fields(clss,obj):
     return [
       unicode(obj),

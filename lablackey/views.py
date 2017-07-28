@@ -106,6 +106,8 @@ def get_schema(request,app_name,model_name):
 
 def get_form_schema(request,app_name,form_name,id=None):
   form = load_class("%s.forms.%s"%(app_name,form_name))
+  if not form.user_is_allowed(request):
+    raise NotImplementedError()
   args = [getattr(request,request.method) or None] # GET or POST
   kwargs = {'instance': getattr(form,'get_instance',lambda *a,**k: None)(request,id)} # for unrest like forms
   if issubclass(form,RequestModelForm):

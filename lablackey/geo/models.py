@@ -8,6 +8,7 @@ from lablackey.db.models import JsonModel
 
 from jsonfield import JSONField
 import json
+import urllib
 
 try:
   import ezdxf
@@ -108,6 +109,10 @@ class Room(models.Model):
   has_checkoutitems = models.BooleanField(default=False)
   roomgroup = models.ForeignKey(RoomGroup,null=True,blank=True)
   map_key = models.CharField(max_length=1,null=True,blank=True)
+  def get_map_link(self):
+    location = self.location
+    lines = [location.name,location.address,location.city.name,location.city.state]
+    return "http://maps.google.com/?q="+urllib.quote(", ".join([unicode(l) for l in lines if l]))
   @property
   def as_json(self):
     return {
@@ -117,6 +122,7 @@ class Room(models.Model):
       'short_name': self.get_short_name(),
       'in_calendar': self.in_calendar,
       'map_key': self.map_key,
+      'map_link': self.get_map_link(),
     }
   __unicode__ = lambda self: "%s"%(self.name or self.location)
   class Meta:

@@ -261,7 +261,10 @@ class OccurrenceModel(JsonModel):
     return date(self.start,"D n/j")
   @property
   def end(self):
-    return self.start.replace(hour=self.end_time.hour,minute=self.end_time.minute)
+    end = self.start.replace(hour=self.end_time.hour,minute=self.end_time.minute)
+    if end < self.start:
+      end += datetime.timedelta(1)
+    return end
   @property
   def google_link(self):
     d = {

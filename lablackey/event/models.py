@@ -346,6 +346,7 @@ class EventOccurrence(PhotosMixin,OccurrenceModel):
       'end': str(self.end),
       'event_id': self.event_id,
       'extra': self.extra,
+      'id': self.id,
     }
   class Meta:
     ordering = ('start',)

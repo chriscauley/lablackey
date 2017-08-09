@@ -56,12 +56,9 @@
     </div>
   </div>
 </form>
+<script type="text/javascript" src="{{ STATIC_URL }}blog_admin.js"></script>
 <script type="text/javascript">
   var tagsAutocomplete = [{% for tag in tags %}"{{ tag }}"{% if not forloop.last %},{% endif %}{% endfor %}];
-  $(document).ready(function () {initBlag()});
+  uR.ready(initBlag);
 </script>
-{% endblock %}
-
-{% block extra_body %}
-<script type="text/javascript" src="{{ STATIC_URL }}blog_admin.js"></script>
 {% endblock %}

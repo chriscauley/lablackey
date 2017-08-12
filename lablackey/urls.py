@@ -50,6 +50,10 @@ if 'lablackey.blog' in settings.INSTALLED_APPS:
   import lablackey.blog.urls
   urlpatterns.append(url(r'^blog/',include(lablackey.blog.urls)))
 
+if 'airbrake' in settings.INSTALLED_APPS:
+  import airbrake.urls
+  urlpatterns.append(url(r'',include(airbrake.urls)))
+
 if 'django.contrib.flatpages' in settings.INSTALLED_APPS:
   from django.contrib.flatpages.models import FlatPage
   import django.contrib.flatpages.views

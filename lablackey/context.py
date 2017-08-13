@@ -15,5 +15,6 @@ def meta(request):
   META = getattr(settings,'META',None) or DEFAULT_META
   META = META.copy()
   for lookup in getattr(settings,'META_LOOKUPS'):
-    META.update(**load_class(lookup)(request) or {})
+    for k,v in (load_class(lookup)(request) or {}).items():
+      META[k] = v or META[k]
   return {'META': META}

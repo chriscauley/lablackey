@@ -71,10 +71,13 @@ class Post(PhotosMixin,UserModel):
 
   @property
   def META(self):
+    image = self.first_photo.file.url if self.first_photo else None
+    if image:
+      image = settings.SITE_URL + image
     return {
       'description': self.get_short_content(),
       'title': unicode(self),
-      'image': self.first_photo.file.url if self.first_photo else None,
+      'image': image,
     }
   #depracate please
   list_users = property(lambda self: [self.user])

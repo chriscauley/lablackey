@@ -33,7 +33,8 @@ class Post(PhotosMixin,UserModel):
 
   title = models.CharField(max_length=200, blank=True)
   subtitle = models.CharField(max_length=200, blank=True,null=True)
-  slug = property(lambda self: slugify(self.title))
+  _slug = models.CharField(max_length=200,null=True,blank=True)
+  slug = property(lambda self: slugify(self._slug or self.title))
   content = models.TextField(blank=True)
   _ht = "A short description to show in front page feed."
   short_content = models.TextField(null=True,blank=True,help_text=_ht)
@@ -65,6 +66,7 @@ class Post(PhotosMixin,UserModel):
   __unicode__ = lambda self: self.title or 'Untitled'
 
   def save(self, *args, **kwargs):
+    self._slug = slugify(self._slug or "")
     super(Post, self).save(*args, **kwargs)
 
   @property
@@ -84,6 +86,8 @@ class Post(PhotosMixin,UserModel):
     q = models.Q(status='published',publish_dt__lte=timezone.now())
     if request.user.is_authenticated():
       q = models.Q(status='published',publish_dt__lte=timezone.now()) | models.Q(user=request.user)
+      if request.user.is_superuser:
+        q = models.Q()
     return [q],{}
 tagging_register(Post)
 

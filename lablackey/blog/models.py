@@ -33,11 +33,12 @@ class Post(PhotosMixin,UserModel):
 
   title = models.CharField(max_length=200, blank=True)
   subtitle = models.CharField(max_length=200, blank=True,null=True)
-  slug = property(lambda self: slugify(self.title))
+  _slug = models.CharField(max_length=200,null=True,blank=True)
+  slug = property(lambda self: slugify(self._slug or self.title))
   content = models.TextField(blank=True)
   _ht = "A short description to show in front page feed."
   short_content = models.TextField(null=True,blank=True,help_text=_ht)
-  get_short_content = lambda self: self.short_content or striptags(explosivo(self.content))
+  get_short_content = lambda self: striptags(explosivo(self.short_content or self.content))
   status = models.CharField(max_length=30, choices=STATUS_CHOICES, default=0)
   template = models.CharField(max_length=64,choices=TEMPLATE_CHOICES,default=TEMPLATE_CHOICES[0][0])
   post_type = models.CharField(max_length=64,choices=POST_TYPES,default=POST_TYPES[0][0])
@@ -65,8 +66,19 @@ class Post(PhotosMixin,UserModel):
   __unicode__ = lambda self: self.title or 'Untitled'
 
   def save(self, *args, **kwargs):
+    self._slug = slugify(self._slug or "")
     super(Post, self).save(*args, **kwargs)
 
+  @property
+  def META(self):
+    image = self.first_photo.file.url if self.first_photo else None
+    if image:
+      image = settings.SITE_URL + image
+    return {
+      'description': self.get_short_content(),
+      'title': unicode(self),
+      'image': image,
+    }
   #depracate please
   list_users = property(lambda self: [self.user])
 
@@ -77,6 +89,8 @@ class Post(PhotosMixin,UserModel):
     q = models.Q(status='published',publish_dt__lte=timezone.now())
     if request.user.is_authenticated():
       q = models.Q(status='published',publish_dt__lte=timezone.now()) | models.Q(user=request.user)
+      if request.user.is_superuser:
+        q = models.Q()
     return [q],{}
 tagging_register(Post)
 

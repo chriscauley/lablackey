@@ -3,19 +3,7 @@
 <html>
   <head>
     <title>{% block title %}{{ settings.SITE_NAME }}{% endblock %}</title>
-    <meta name="viewport" content="initial-scale=1">
-    <meta name="keywords" content="{% block meta-keywords %}{% endblock %}">
-    <meta name="application-name" content="">
-
-    <meta property="og:title" content="{{ settings.META.TITLE }}">
-    <meta property="og:image" content="{{ settings.META.IMAGE }}">
-    <meta property="og:description" content="{{ settings.META.DESCRIPTION }}">
-
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@{{ settings.META.TWITTER }}" />
-    <meta name="twitter:title" content="{{ settings.META.TITLE }}" />
-    <meta name="twitter:description" content="{{ settings.META.DESCRIPTION }}" />
-    <meta name="twitter:image" content="{{ settings.META.IMAGE }}" />
+    {% include "_meta.html" %}
 
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -36,7 +24,7 @@
   <body>
     <div id="wrapper">
       <header>
-        <ur-nav>{% include "_nav.html" %}</ur-nav>
+        {% include "_nav.html" %}
       </header>
       <div id="content">{% block content %}{% endblock %}{% block main %}{% endblock %}</div>
       <div id="alert-div"></div>

@@ -15,13 +15,14 @@ register(Post,filter_fields=["post_type"])
 
 @admin.register(Post)
 class PostAdmin(RawMixin,admin.ModelAdmin):
-  list_display = ('__unicode__','user','publish_dt','status','post_type')
+  list_display = ('__unicode__','_slug','user','publish_dt','status','post_type')
+  list_editable = ('_slug',)
   list_filter = ('post_type',)
   search_fields = ('content','title')
   raw_id_fields = ('photo','user')
   exclude = ("template",)
   fieldsets = [
-    (None,{'fields': [('user','photo'),('title','subtitle'),'content','status','publish_dt']}),
+    (None,{'fields': [('user','photo'),('title','subtitle','_slug'),'content','status','publish_dt']}),
     ('Meta',{'fields': ['post_type','url','featured','short_content','extra'],'classes': ('collapse',)}),
   ]
 

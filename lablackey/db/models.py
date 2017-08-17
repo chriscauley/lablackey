@@ -220,7 +220,13 @@ class UserModel(JsonModel):
   class Meta:
     abstract = True
 
-class User121Model(models.Model):
+class User121Model(JsonModel):
   user = AutoOneToOneField(settings.AUTH_USER_MODEL)
+  can_edit_own = False
+  private = False
+  def row_permissions(self,user):
+    return getattr(self,'public',None) or user.is_superuser or (user == self.user)
+  class Meta:
+    abstract = True
   class Meta:
     abstract = True

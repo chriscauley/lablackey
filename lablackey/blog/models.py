@@ -119,7 +119,7 @@ class Banner(models.Model):
   start_date = models.DateField(default=datetime.date.today)
   end_date = models.DateField(blank=True)
   name = models.CharField(max_length=64)
-  header = models.CharField(default="Featured Event",max_length=32)
+  header = models.CharField(default="Featured Event",max_length=32,null=True,blank=True)
   active = models.BooleanField(default=True)
   src = models.ImageField(upload_to="banners")
   url = models.CharField(max_length=200)

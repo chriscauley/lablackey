@@ -27,7 +27,7 @@ class PostAdmin(RawMixin,admin.ModelAdmin):
   ]
 
 admin.site.register(PressItem)
-#admin.site.register(Banner)
+admin.site.register(Banner)
 
 if 'django.contrib.flatpages' in settings.INSTALLED_APPS:
   from django.contrib.flatpages.models import FlatPage

@@ -64,6 +64,7 @@ def form_to_schema(form):
     'schema': schema,
     'initial': initial,
     'errors': { k: e.get_json_data()[0]['message'] for k,e in form.errors.items() } or None,
+    'html_errors': getattr(form,"html_errors",[]),
     'rendered_content': getattr(form,"rendered_content",None),
     'form_title': getattr(form,"form_title",None)
   }

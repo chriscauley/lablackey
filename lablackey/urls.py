@@ -5,9 +5,6 @@ from django.contrib.auth import urls as auth_urls
 from django.contrib.staticfiles.views import serve
 from django.db.utils import ProgrammingError
 
-from lablackey.decorators import resend_activation
-from lablackey.registration import urls as registration_urls
-
 admin.autodiscover()
 
 import views
@@ -20,10 +17,18 @@ urlpatterns = [
   url(r'favicon.ico$', views.redirect,
       {'url': getattr(settings,'FAVICON','/static/favicon.png')}),
   url(r'^admin/', include(admin.site.urls)),
-  url(r'^auth/',include(registration_urls)),
-  url(r'^accounts/', include(registration_urls,namespace="depracated")),#! Depracated in favor of auth
   url(r'^$',views.render_template,kwargs={'template': "base.html"}),
+  url(r'^auth/', include(auth_urls)),
+  url(r'^auth/login_ajax/$',views.login_ajax,name='login_ajax'),
+  url(r'^auth/login/$',views.single_page_app,name="login"),
 ]
+
+if 'lablackey.registration' in settings.INSTALLED_APPS:
+  from lablackey.registration import urls as registration_urls
+  urlpatterns += [
+    url(r'^auth/',include(registration_urls)),
+    url(r'^accounts/', include(registration_urls,namespace="depracated")),#! Depracated in favor of auth
+  ]
 
 if 'lablackey.api' in settings.INSTALLED_APPS:
   from lablackey.api import views as api_views

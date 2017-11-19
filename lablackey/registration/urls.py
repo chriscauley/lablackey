@@ -9,12 +9,9 @@ from lablackey.decorators import resend_activation
 import lablackey.views
 
 urlpatterns = [
-  url(r'^login_ajax/$',resend_activation(lablackey.views.login_ajax),name='login_ajax'),
-  url(r'^login/$',lablackey.views.single_page_app,name="login"),
   url(r'^register/$',lablackey.views.single_page_app,name="register"),
   url(r'^register/complete/$',lablackey.views.render_template,kwargs={"template":"registration/complete.html"},
       name='registration_complete'),
   url(r'^register/(\w+)/$',views.activate,name='registration_activate'),
   url(r'^activate/(\w+)/$',views.activate), #! DEPRACATED in favor of the above
-  url(r'', include(auth_urls)),
 ]

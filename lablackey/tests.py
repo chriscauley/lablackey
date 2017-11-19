@@ -1,6 +1,7 @@
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
@@ -36,6 +37,7 @@ class ClientTestCase(TestCase):
   fixture_apps = []
   verbosity = 0
   def setUp(self):
+    Site.objects.create(domain='testserver')
     for app_name in self.fixture_apps:
       app = apps.get_app_config(app_name)
       self.call_command("loaddata",os.path.join(app.module.__path__[0],"fixtures/test.json"))
@@ -57,6 +59,8 @@ class ClientTestCase(TestCase):
       user.save()
     self.client.post(reverse('login'),{'username': username,'password': password or _pw})
     return user
+  def logout(self):
+    self.client.get(reverse('logout'))
   def _new_object(self,model,**kwargs):
     return model.objects.create(**kwargs)
   def new_user(self,username=None,password=None,**kwargs):

@@ -5,8 +5,13 @@ from django.template.loader import get_template, TemplateDoesNotExist
 from django.template import Context, RequestContext
 from cStringIO import StringIO
 
-import sys, traceback, markdown
-import html2text
+import sys, traceback
+
+try:
+  import markdown
+  import html2text
+except ImportError:
+  pass
 
 def render_template(name,context):
   html = None

@@ -8,7 +8,11 @@ from django.http import JsonResponse, HttpResponseRedirect
 from django.utils import timezone
 
 from lablackey.mail import send_template_email
-from lablackey.registration.models import RegistrationProfile
+
+try:
+  from lablackey.registration.models import RegistrationProfile
+except RuntimeError:
+  pass
 
 import urllib2, datetime
 

@@ -70,3 +70,14 @@ class RequestForm(forms.Form):
   def __init__(self,request,*args,**kwargs):
     self.request = request
     super(RequestForm,self).__init__(self.request.POST or None,self.request.FILES or None,*args,**kwargs)
+
+class RequestUserModelForm(RequestModelForm):
+  """ Users can only ready/write their own data """
+  user_field = "user"
+  def save(self,*args,**kwargs):
+    if self.instance.pk:
+      if getattr(self.instance,self.user_field) != self.request.user:
+        raise NotAllowed()
+    else:
+      setattr(self.instance,self.user_field,self.request.user)
+    return super(RequestUserModelForm,self).save(*args,**kwargs)

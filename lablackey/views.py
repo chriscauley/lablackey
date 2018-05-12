@@ -105,18 +105,30 @@ def get_schema(request,app_name,model_name):
   return JsonResponse({'schema': model_to_schema(model) })
 
 def get_form_schema(request,app_name,form_name,id=None):
-  form = load_class("%s.forms.%s"%(app_name,form_name))
-  if not form.user_is_allowed(request):
+  form_class = load_class("%s.forms.%s"%(app_name,form_name))
+  if not form_class.user_is_allowed(request,request.method):
     raise NotImplementedError()
-  args = [getattr(request,request.method) or None] # GET or POST
-  kwargs = {'instance': getattr(form,'get_instance',lambda *a,**k: None)(request,id)} # for unrest like forms
-  if issubclass(form,RequestModelForm):
-    form = form(request,**kwargs)
-  elif issubclass(form,RequestForm):
+
+  instance = getattr(form_class,'get_instance',lambda *a,**k: None)(request,id)
+  kwargs = {'instance': instance} # for unrest like forms
+  if issubclass(form_class,RequestModelForm):
+    form = form_class(request,**kwargs)
+  elif issubclass(form_class,RequestForm):
     kwargs.pop("instance")
-    form = form(request,**kwargs)
+    form = form_class(request,**kwargs)
   else:
-    form = form(*args,**kwargs)
+    args = [getattr(request,request.method,None) or None] # GET or POST
+    form = form_class(*args,**kwargs)
+
+  if request.method == "DELETE":
+    messages = []
+    if "undo" in request.GET:
+      form.undelete()
+      messages.append({"success": "Undo Successful"})
+    else:
+      messages.append({"success": '"{}" deleted!'.format(form.instance)})
+      form.delete()
+    return JsonResponse({"ur_messages": messages, "succes": True})
 
   if form.is_valid():
     form.save()

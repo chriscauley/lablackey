@@ -8,7 +8,7 @@ from annoying.fields import AutoOneToOneField
 
 def as_json(self):
   out = {}
-  if not getattr(self,"_private_id",None) and not 'pk' in self.json_fields:
+  if not getattr(self,"_private_id",None) and not 'id' in self.json_fields:
     out['id'] = self.id
   for f in self.json_fields:
     key = f

@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
+from django.db import models
 from django import forms
 from django.shortcuts import get_object_or_404
 
@@ -38,7 +39,7 @@ class RequestModelForm(forms.ModelForm):
       self.instance.save()
     return self.instance
   @classmethod
-  def user_is_allowed(clss,request):
+  def user_is_allowed(clss,request,method="GET"):
     return request.user.is_authenticated() and request.user.is_superuser
   @classmethod
   def get_list_fields(clss,obj):
@@ -50,20 +51,25 @@ class RequestModelForm(forms.ModelForm):
     if not id:
       return
     return get_object_or_404(clss.Meta.model,id=id)
-  @classmethod
-  def get_page_json(clss,page=0):
+  def get_queryset(self):
+    return self.Meta.model.objects.all()
+  def get_page_json(self,page=1):
     per_page = 100
-    start = int(page)*per_page
-    end = start + per_page
-    results = []
-    for obj in clss.Meta.model.objects.all()[start:end]:
-      out = {
-        'id': obj.id,
-        'url': getattr(obj,'get_absolute_url',lambda: None)(),
-        'ur_admin': getattr(obj,'ur_admin',None),
-        'fields': clss.get_list_fields(obj)
-      }
-      results.append(out)
+    page = int(page)
+    all_results = self.get_queryset()
+    fields = ['id'] + self.Meta.fields
+    fields_map = { f.name: f for f in self.Meta.model._meta.fields }
+    def process_field(f):
+      if isinstance(fields_map[f],models.ForeignKey):
+        return f + "_id"
+      return f
+    fields = map(process_field,fields)
+
+    results = all_results
+    if page: # zero returns all results
+      results = all_results[(page-1)*per_page:page*per_page]
+
+    results = [[getattr(r,field) for field in fields] for r in results]
     return dict(
       page=page,
       results=results,
@@ -79,6 +85,13 @@ class RequestForm(forms.Form):
 class RequestUserModelForm(RequestModelForm):
   """ Users can only ready/write their own data """
   user_field = "user"
+  @classmethod
+  def get_instance(clss,request,id=None):
+    if not id:
+      return
+    if request.user.is_superuser:
+      return get_object_or_404(clss.Meta.model,id=id)
+    return get_object_or_404(clss.Meta.model,id=id,**{ self.user_field: self.request.user })
   def save(self,*args,**kwargs):
     if self.instance.pk:
       if getattr(self.instance,self.user_field) != self.request.user:

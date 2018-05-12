@@ -54,6 +54,10 @@ def form_to_schema(form):
       json['help_text'] = model._meta.get_field(name).help_text
     if hasattr(field,'choices'):
       json['choices'] = [c for c in field.choices]
+    if isinstance(field,forms.ModelChoiceField):
+      json['type'] = 'fk'
+      model = field.queryset.model
+      json['to'] = model._meta.app_label+"."+model.__name__
     if name in field_overrides:
       json['type'] = field_overrides[name]
     if not json.get('type',None) and json.get('choices',None):
@@ -68,6 +72,8 @@ def form_to_schema(form):
     'rendered_content': getattr(form,"rendered_content",None),
     'form_title': getattr(form,"form_title",None)
   }
+  if model:
+    out['ur_model'] = model._meta.app_label + "." + model._meta.model_name
   if hasattr(form,'Media'):
     out['css'] = getattr(form.Media,'css',[])
     out['js'] = getattr(form.Media,'js',[])

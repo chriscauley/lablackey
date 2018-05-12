@@ -2,18 +2,17 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.sites.models import Site
 from django.contrib.sites.requests import RequestSite
 from django.http import JsonResponse, HttpResponseRedirect
 from django.utils import timezone
 
 from lablackey.mail import send_template_email
 
-try:
+if "lablackey.registration" in settings.INSTALLED_APPS:
   from lablackey.registration.models import RegistrationProfile
-except RuntimeError:
-  pass
 
+if "django.contrib.sites" in settings.INSTALLED_APPS:
+  from django.contrib.sites.models import Site
 import urllib2, datetime
 
 def resend_activation(target):

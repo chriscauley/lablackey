@@ -8,6 +8,9 @@ class UserEmailForm(forms.ModelForm):
     fields = ('email',)
     model = get_user_model()
 
+def NIE(self):
+  raise NotImplementedError()
+
 class RequestModelForm(forms.ModelForm):
   """
   Just like a normal form but requires a request as the first argument rather than data.
@@ -18,6 +21,7 @@ class RequestModelForm(forms.ModelForm):
   user = example_form.request.user
   """
   is_user_form = False
+  delete = undelete = NIE
   @property
   def ur_admin(self):
     return reverse(args=[self.__module__.replace(".forms","")])
@@ -67,6 +71,7 @@ class RequestModelForm(forms.ModelForm):
 
 class RequestForm(forms.Form):
   """ Same as above but inherits from Form instead of ModelForm"""
+  delete = undelete = NIE
   def __init__(self,request,*args,**kwargs):
     self.request = request
     super(RequestForm,self).__init__(self.request.POST or None,self.request.FILES or None,*args,**kwargs)

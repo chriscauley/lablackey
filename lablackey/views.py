@@ -131,9 +131,10 @@ def get_form_schema(request,app_name,form_name,id=None):
     return JsonResponse({"ur_messages": messages, "succes": True})
 
   if form.is_valid():
-    form.save()
+    obj = form.save()
     return JsonResponse({
       'ur_route_to': getattr(form,"success_url",None) or request.POST.get("next",None),
       'messages': [{'level': 'success', 'body': "Form has been saved." }],
+      'values_list': form.obj_to_list(obj),
     })
   return JsonResponse(form_to_schema(form),encoder=LazyEncoder)

@@ -4,6 +4,8 @@ from django.db import models
 from django import forms
 from django.shortcuts import get_object_or_404
 
+from decorators import cached_property
+
 class UserEmailForm(forms.ModelForm):
   class Meta:
     fields = ('email',)
@@ -53,10 +55,8 @@ class RequestModelForm(forms.ModelForm):
     return get_object_or_404(clss.Meta.model,id=id)
   def get_queryset(self):
     return self.Meta.model.objects.all()
-  def get_page_json(self,page=1):
-    per_page = 100
-    page = int(page)
-    all_results = self.get_queryset()
+  @cached_property
+  def list_fields(self):
     fields = ['id'] + self.Meta.fields
     fields_map = { f.name: f for f in self.Meta.model._meta.fields }
     def process_field(f):
@@ -64,12 +64,21 @@ class RequestModelForm(forms.ModelForm):
         return f + "_id"
       return f
     fields = map(process_field,fields)
+    return fields
+
+  def obj_to_list(self,obj):
+    return [getattr(obj,f) for f in self.list_fields]
+
+  def get_page_json(self,page=1):
+    per_page = 100
+    page = int(page)
+    all_results = self.get_queryset()
 
     results = all_results
     if page: # zero returns all results
       results = all_results[(page-1)*per_page:page*per_page]
+    results = [self.obj_to_list(r) for r in results]
 
-    results = [[getattr(r,field) for field in fields] for r in results]
     return dict(
       page=page,
       results=results,

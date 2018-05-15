@@ -11,6 +11,8 @@ class LazyEncoder(DjangoJSONEncoder):
   def default(self, obj):
     if isinstance(obj, Promise):
       return force_text(obj)
+    if isinstance(obj,models.Model):
+      return obj.pk
     return super(LazyEncoder, self).default(obj)
 
 EXCLUDE_FIELDS = ['django.db.models.AutoField']

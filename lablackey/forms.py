@@ -29,8 +29,16 @@ class RequestModelForm(forms.ModelForm):
   def ur_admin(self):
     return reverse(args=[self.__module__.replace(".forms","")])
   def __init__(self,request,*args,**kwargs):
+    data = request.POST.copy()
+    instance = kwargs.get("instance",None)
+    if data and instance:
+      # fields that are required can be supplied by the instance if not in data
+      # this allows the client to successfully submit a partial form
+      for name,field in self.base_fields.items():
+        if hasattr(instance,name) and not name in data:
+          data[name] = getattr(instance,name)
     self.request = request
-    super(RequestModelForm,self).__init__(self.request.POST or None,self.request.FILES or None,*args,**kwargs)
+    super(RequestModelForm,self).__init__(data or None,self.request.FILES or None,*args,**kwargs)
   def save(self,*args,**kwargs):
     commit = kwargs.pop("commit",True)
     kwargs['commit'] = False

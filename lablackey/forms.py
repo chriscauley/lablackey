@@ -106,7 +106,7 @@ class RequestUserModelForm(RequestModelForm):
     qs = super(RequestUserModelForm,self).get_queryset(*args,**kwargs)
     return qs.filter(**{self.user_field: self.request.user})
   @classmethod
-  def user_is_allowed(self,request,method):
+  def user_is_allowed(clss,request,method):
     # user is always allowed to modify their own data
     return request.user.is_authenticated()
   @classmethod
@@ -115,7 +115,7 @@ class RequestUserModelForm(RequestModelForm):
       return
     if request.user.is_superuser:
       return get_object_or_404(clss.Meta.model,id=id)
-    return get_object_or_404(clss.Meta.model,id=id,**{ self.user_field: self.request.user })
+    return get_object_or_404(clss.Meta.model,id=id,**{ clss.user_field: request.user })
   def save(self,*args,**kwargs):
     if self.instance.pk:
       if getattr(self.instance,self.user_field) != self.request.user:

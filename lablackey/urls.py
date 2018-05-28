@@ -19,8 +19,9 @@ urlpatterns = [
   url(r'^admin/', include(admin.site.urls)),
   url(r'^$',views.render_template,kwargs={'template': "base.html"}),
   url(r'^auth/', include(auth_urls)),
-  url(r'^auth/login_ajax/$',views.login_ajax,name='login_ajax'),
   url(r'^auth/login/$',views.single_page_app,name="login"),
+  url(r'^api/login/$',views.login_ajax,name='login_ajax'),
+  url(r'^api/register/$',views.register_ajax,name='register_ajax'),
 ]
 
 if 'lablackey.registration' in settings.INSTALLED_APPS:

@@ -102,6 +102,13 @@ class RequestForm(forms.Form):
 class RequestUserModelForm(RequestModelForm):
   """ Users can only ready/write their own data """
   user_field = "user"
+  def get_queryset(self,*args,**kwargs):
+    qs = super(RequestUserModelForm,self).get_queryset(*args,**kwargs)
+    return qs.filter(**{self.user_field: self.request.user})
+  @classmethod
+  def user_is_allowed(self,request,method):
+    # user is always allowed to modify their own data
+    return request.user.is_authenticated()
   @classmethod
   def get_instance(clss,request,id=None):
     if not id:

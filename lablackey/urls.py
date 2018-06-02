@@ -43,6 +43,11 @@ if 'lablackey.api' in settings.INSTALLED_APPS:
     url(r'^form/([\w\d\.]+)([\w\d]+Form)/$',views.render_template,name="ur-form"),
   ]
   urlpatterns += build_urls()
+  if settings.DEBUG:
+    import lablackey.dummy.views as dummy_views
+    urlpatterns += [
+      url(r'^api/test/reset/$',dummy_views.reset)
+    ]
 
 if "social.apps.django_app.default" in settings.INSTALLED_APPS:
   import social.apps.django_app.urls

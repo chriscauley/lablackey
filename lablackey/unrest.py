@@ -58,8 +58,8 @@ def form_to_schema(form):
       json['choices'] = [c for c in field.choices]
     if isinstance(field,forms.ModelChoiceField):
       json['type'] = 'fk'
-      model = field.queryset.model
-      json['to'] = model._meta.app_label+"."+model.__name__
+      fk_model = field.queryset.model
+      json['to'] = fk_model._meta.app_label+"."+fk_model.__name__
     if name in field_overrides:
       json['type'] = field_overrides[name]
     if not json.get('type',None) and json.get('choices',None):

@@ -49,29 +49,30 @@ if 'lablackey.api' in settings.INSTALLED_APPS:
       url(r'^api/test/reset/$',dummy_views.reset)
     ]
 
-if "social.apps.django_app.default" in settings.INSTALLED_APPS:
-  import social.apps.django_app.urls
-  urlpatterns.append(url('', include(social.apps.django_app.urls, namespace='social')))
-
-if 'social_django' in settings.INSTALLED_APPS:
+if 'social_django' in settings.INSTALLED_APPS: # django companion app for python-social-auth
   import social_django.urls
   urlpatterns.append(url('', include(social_django.urls, namespace='social')))
+
+if "social.apps.django_app.default" in settings.INSTALLED_APPS: # older version of python-social-auth
+  import social.apps.django_app.urls
+  urlpatterns.append(url('', include(social.apps.django_app.urls, namespace='social')))
 
 if 'lablackey.blog' in settings.INSTALLED_APPS:
   import lablackey.blog.urls
   urlpatterns.append(url(r'^blog/',include(lablackey.blog.urls)))
 
-if 'airbrake' in settings.INSTALLED_APPS:
+if 'airbrake' in settings.INSTALLED_APPS: # django-airbreak-lite
   import airbrake.urls
   urlpatterns.append(url(r'',include(airbrake.urls)))
 
+#! TODO: django.contrib.flatpages.middleware.FlatpageFallbackMiddleware looks preferable
 if 'django.contrib.flatpages' in settings.INSTALLED_APPS:
   from django.contrib.flatpages.models import FlatPage
   import django.contrib.flatpages.views
   # this breaks on initial migration before flatpages are migrated
   try:
     fps = '|'.join([page.url[1:] for page in FlatPage.objects.all()])
-    urlpatterns.append(url(r'^(%s)$'%fps,django.contrib.flatpages.views.flatpage,name='map'))
+    urlpatterns.append(url(r'^(%s)$'%fps,django.contrib.flatpages.views.flatpage,name='flatpage'))
   except ProgrammingError:
     pass
 

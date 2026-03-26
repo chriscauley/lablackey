@@ -6,7 +6,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.utils.urls import remove_query_param, replace_query_param
 
-import six, copy
+import copy
 
 class PaginatedListSerializer(serializers.ListSerializer):
   def __init__(self,request,*args,**kwargs):
@@ -21,7 +21,7 @@ class PaginatedListSerializer(serializers.ListSerializer):
       self.page = paginator.page(page_number)
     except InvalidPage as exc:
       msg = class_.invalid_page_message.format(
-        page_number=page_number, message=six.text_type(exc)
+        page_number=page_number, message=str(exc)
       )
       raise NotFound(msg)
     super(PaginatedListSerializer,self).__init__(list(self.page),*args,**kwargs)
@@ -81,8 +81,8 @@ class BaseSizzler(serializers.ModelSerializer):
     #! TODO This should maybe use pk_name once schema is in use?
     if not "pk" in fields:
       fields.append("pk")
-    if not "__unicode__" in fields:
-      fields.append("__unicode__")
+    if not "__str__" in fields:
+      fields.append("__str__")
     return fields
 
   def get_fields(self,*args,**kwargs):

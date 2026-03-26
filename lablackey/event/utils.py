@@ -115,7 +115,7 @@ def get_room_conflicts(base_occurrence=None):
     reshuffled_conflicts = []
     room_conflicts = []
     conflicts.sort(key=lambda i:i[0])
-    func = lambda (i,(dt,events)): dt-datetime.timedelta(0,i*60*30)
+    func = lambda item: item[1][0]-datetime.timedelta(0,item[0]*60*30)
     for k,g in groupby(enumerate(conflicts),key=func):
       reshuffled_conflicts.append(map(itemgetter(1), g))
     for conflict_spots in reshuffled_conflicts:

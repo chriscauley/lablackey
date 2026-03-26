@@ -19,7 +19,7 @@ def expiry():
   return timezone.now()+datetime.timedelta(0,_days)
 
 class SMSNumber(models.Model):
-  user = models.OneToOneField(settings.AUTH_USER_MODEL,null=True,blank=True)
+  user = models.OneToOneField(settings.AUTH_USER_MODEL,null=True,blank=True,on_delete=models.SET_NULL)
   number = models.CharField(max_length=16,unique=True)
   verified = models.DateTimeField(null=True,blank=True)
   code = models.IntegerField(default=random_code)
@@ -29,7 +29,7 @@ class SMSNumber(models.Model):
     self.expire = expiry()
     self.save()
     self.send("Code: %s for %s"%(self.code,settings.SITE_NAME))
-  __unicode__ = lambda self: "%s - %s"%(self.number,self.user)
+  __str__ = lambda self: "%s - %s"%(self.number,self.user)
   def send(self,body,from_=settings.TWILIO_NUMBER):
     client = TwilioRestClient(settings.TWILIO_ACCOUNT_SID,settings.TWILIO_AUTH_TOKEN)
     message = client.messages.create(to=self.number,from_=from_,body=body)
@@ -46,5 +46,5 @@ if getattr(settings,'TESTING',None):
     m.to = self.number
     m.from_ = from_
     sms.outbox.append(m)
-    print "SMS to %s: %s"%(self.number,body)
+    print("SMS to %s: %s"%(self.number,body))
   SMSNumber.send = _send

@@ -10,7 +10,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.template.response import TemplateResponse
 
 from .forms import UserEmailForm, RequestModelForm, RequestForm
-from loader import load_class
+from .loader import load_class
 from .unrest import model_to_schema, form_to_schema, LazyEncoder
 
 import json, random
@@ -42,7 +42,7 @@ def login_ajax(request):
 
 def user_json(request):
   user = request.user
-  if user.is_authenticated():
+  if user.is_authenticated:
     keys = ['id','username','email','is_superuser','is_staff']
     return JsonResponse({ 'user': { k:getattr(user,k) for k in keys } })
   return JsonResponse({})

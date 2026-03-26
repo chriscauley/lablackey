@@ -29,7 +29,7 @@ def add_phone(request):
 @auth_required
 def verify_phone(request):
   try:
-    print request.POST.get("verification_code",0)
+    print(request.POST.get("verification_code",0))
     number = SMSNumber.objects.get(code=request.POST.get("verification_code",0),user=request.user)
   except SMSNumber.DoesNotExist:
     return JsonResponse({"error": "Invalid verification code."})

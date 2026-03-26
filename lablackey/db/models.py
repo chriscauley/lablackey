@@ -26,7 +26,7 @@ def as_json(self):
   return out
 
 def lite_json(self):
-  out = { 'id': self.id, 'title': self.__unicode__() }
+  out = { 'id': self.id, 'title': str(self) }
   if hasattr(self,'get_absolute_url'):
     out['url'] = self.get_absolute_url()
   if hasattr(self,'ur_admin'):
@@ -90,7 +90,7 @@ class JsonModel(models.Model,JsonMixin):
 
 class NamedModel(JsonModel):
   name = models.CharField(max_length=128)
-  __unicode__ = lambda self: self.name
+  __str__ = lambda self: self.name
   class Meta:
     abstract = True
 
@@ -101,7 +101,7 @@ def _prep_with_auth(*args,**kwargs):
     args = args[1:]
   if not request:
     return args,kwargs
-  if request.user.is_authenticated():
+  if request.user.is_authenticated:
     kwargs['user'] = request.user
   else:
     if not request.session.exists(request.session.session_key):
@@ -113,7 +113,7 @@ class UserOrSessionManager(models.Manager):
   def get(self,*args,**kwargs):
     try:
       return self.request_filter(*args,**kwargs)[0]
-    except IndexError,e:
+    except IndexError as e:
       raise self.model.DoesNotExist(e)
   def get_or_init(self,*args,**kwargs):
     try:
@@ -148,7 +148,7 @@ class UserOrSessionManager(models.Manager):
     return self.filter(*args,**kwargs)
 
 class UserOrSessionModel(JsonModel):
-  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True,related_name="user_%(app_label)s%(class)ss")
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,null=True,blank=True,related_name="user_%(app_label)s%(class)ss",on_delete=models.SET_NULL)
   session = models.ForeignKey(Session,null=True,blank=True,related_name="user_%(app_label)s%(class)ss",
                               on_delete=models.SET_NULL)
   session_key = models.CharField(max_length=40,null=True,blank=True)
@@ -182,7 +182,7 @@ def to_base32(s):
 
 class NamedTreeModel(models.Model):
   name = models.CharField(max_length=64)
-  parent = models.ForeignKey("self",null=True,blank=True)
+  parent = models.ForeignKey("self",null=True,blank=True,on_delete=models.SET_NULL)
   order = models.FloatField(default=0)
   level = models.IntegerField(default=0)
   def get_order(self):
@@ -195,13 +195,13 @@ class NamedTreeModel(models.Model):
     self.order = self.get_order()
     super(NamedTreeModel,self).save(*args,**kwargs)
 
-  __unicode__ = lambda self: "(%s) %s"%(self.parent,self.name) if self.parent else self.name
+  __str__ = lambda self: "(%s) %s"%(self.parent,self.name) if self.parent else self.name
   class Meta:
     abstract = True
 
 class SlugModel(models.Model):
   title = models.CharField(max_length=128)
-  __unicode__ = lambda self: self.title
+  __str__ = lambda self: self.title
   slug = models.CharField(max_length=128,null=True,blank=True,unique=True)
   def save(self,*args,**kwargs):
     self.slug = slugify(self.title)
@@ -212,7 +212,7 @@ class SlugModel(models.Model):
     abstract = True
 
 class UserModel(JsonModel):
-  user = models.ForeignKey(settings.AUTH_USER_MODEL)
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
   can_edit_own = False
   private = False
   def row_permissions(self,user):
@@ -221,7 +221,7 @@ class UserModel(JsonModel):
     abstract = True
 
 class User121Model(JsonModel):
-  user = AutoOneToOneField(settings.AUTH_USER_MODEL)
+  user = AutoOneToOneField(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
   can_edit_own = False
   private = False
   def row_permissions(self,user):

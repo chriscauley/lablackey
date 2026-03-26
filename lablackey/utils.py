@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.forms import PasswordResetForm
 from django.core.mail import mail_admins
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponseForbidden, HttpResponse
 
 import traceback, json, datetime
@@ -14,7 +14,7 @@ class TimeIt():
     self.last = self.start = datetime.datetime.now()
   def __call__(self,s=None):
     now = datetime.datetime.now()
-    print s,'\t',int((now-self.start).total_seconds()*1000),'\t',int((now-self.last).total_seconds()*1000)
+    print(s,'\t',int((now-self.start).total_seconds()*1000),'\t',int((now-self.last).total_seconds()*1000))
     self.last = datetime.datetime.now()
 
 def cached_method(*args,**kwargs):
@@ -45,7 +45,7 @@ def reset_password(user,
       email_template_name=email_template_name)
     
   else:
-    print form.errors
+    print(form.errors)
 
 def get_or_none(model,**kwargs):
   try:
@@ -83,12 +83,12 @@ def latin1_to_ascii (unicrap):
     something meaningful. Anything not converted is deleted.
   """
   try:
-    return unicode(unicrap)
+    return str(unicrap)
   except:
     pass
   r = ''
   for i in unicrap:
-    if xlate.has_key(ord(i)):
+    if ord(i) in xlate:
       r += xlate[ord(i)]
     elif ord(i) >= 0x80:
       pass

@@ -13,7 +13,8 @@ if "lablackey.registration" in settings.INSTALLED_APPS:
 
 if "django.contrib.sites" in settings.INSTALLED_APPS:
   from django.contrib.sites.models import Site
-import urllib2, datetime
+from urllib.parse import quote as urllib_quote
+import datetime
 
 def resend_activation(target):
   def wrapper(request,*args,**kwargs):
@@ -45,9 +46,9 @@ def auth_required(func, **decorator_kwargs):
   # kwargs can be redirect_field_name and login_url (see login_required)
   def wrapper(request, *args, **kwargs):
     user=request.user  
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
       return func(request, *args, **kwargs)
-    if request.is_ajax():
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
       response = JsonResponse({'status': 401,'error': "You must be logged in to continue"},status=400)
       #response['WWW-Authenticate'] = 'Basic realm="api"'
       return response
@@ -58,10 +59,10 @@ def auth_required(func, **decorator_kwargs):
 
 def email_required(func):
   def wrap(request, *args, **kwargs):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
       return auth_required(func)(request,**kwargs)
     if not request.user.email:
-      return HttpResponseRedirect("/set_email/?next=%s"%urllib2.quote(request.path))
+      return HttpResponseRedirect("/set_email/?next=%s"%urllib_quote(request.path))
     return func(request, *args, **kwargs)
   wrap.__doc__=func.__doc__
   wrap.__name__=func.__name__

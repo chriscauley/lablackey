@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.core import mail
 from django.core.management import call_command
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase, Client
 
 import random, os
@@ -16,14 +16,14 @@ def _check(a,b):
   return success
 
 def check_subjects(subjects,outbox=None):
-  print "DEPRACATED! Use ClientTestCase.check_subjects instead!"
+  print("DEPRACATED! Use ClientTestCase.check_subjects instead!")
   if not outbox:
     outbox = mail.outbox
   outbox_subjects = [m.subject.replace(settings.EMAIL_SUBJECT_PREFIX,'') for m in outbox]
   return _check(subjects,outbox_subjects)
 
 def check_recipients(recipients,outbox=None):
-  print "DEPRACATED! Use ClientTestCase.check_recipients instead!"
+  print("DEPRACATED! Use ClientTestCase.check_recipients instead!")
   if not outbox:
     outbox = mail.outbox
   outbox_recipients = [m.recipients() for m in outbox]

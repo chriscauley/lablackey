@@ -3,7 +3,7 @@ from django.core.mail import EmailMultiAlternatives, send_mail, mail_admins
 from django.core.mail.backends.smtp import EmailBackend
 from django.template.loader import get_template, TemplateDoesNotExist
 from django.template import Context, RequestContext
-from cStringIO import StringIO
+from io import StringIO
 
 import sys, traceback
 
@@ -41,7 +41,7 @@ def render_template(name,context):
 
 def send_template_email(template_name, recipients, request=None,
                         from_email=settings.DEFAULT_FROM_EMAIL, context={},bcc=[]):
-  if type(recipients) in [unicode,str]:
+  if type(recipients) is str:
     recipients = [recipients]
   if not 'settings' in context:
     context['settings'] = {a: getattr(settings,a,None) for a in getattr(settings,"PUBLIC_SETTINGS",['DEBUG'])}
@@ -84,7 +84,7 @@ def mail_on_fail(target):
   def wrapper(*args,**kwargs):
     try:
       return target(*args,**kwargs)
-    except Exception, err:
+    except Exception as err:
       lines = [
         "An unknown erro has occurred when executing the following function:",
         "name: %s"%target.__name__,
@@ -115,6 +115,6 @@ class DebugBackend(EmailBackend):
       message.bcc = filter_emails(message.bcc)
       for a in attrs:
         if getattr(message,a) != original[a]:
-          print "%s changed: %s \nfor %s"%(a,original[a],message.subject)
-    print "final to: ",message.to
+          print("%s changed: %s \nfor %s"%(a,original[a],message.subject))
+    print("final to: ",message.to)
     return super(DebugBackend,self).send_messages(email_messages)

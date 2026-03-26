@@ -18,7 +18,7 @@ class ModelBackend(object):
         """
         if user:
             if hasattr(user, 'auto_login'):
-                if not user.is_anonymous() and user.auto_login:
+                if not user.is_anonymous and user.auto_login:
                     return user
         else:
             try:

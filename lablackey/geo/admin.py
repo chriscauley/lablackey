@@ -12,13 +12,13 @@ class LocationAdmin(admin.ModelAdmin):
   fields = ('name','short_name','parent','address','address2','city','zip_code','latlon','dxf','extra')
 
 class RoomAdmin(admin.ModelAdmin):
-  list_display = ('__unicode__','roomgroup','map_key')
+  list_display = ('__str__','roomgroup','map_key')
   list_editable = ('roomgroup','map_key')
   if ContainerInline:
     inlines = [ContainerInline]
 
 class DXFEntityAdmin(admin.ModelAdmin):
-  list_display = ('__unicode__','room')
+  list_display = ('__str__','room')
   list_editable = ('room',)
 
 class RoomGroupAdmin(RawMixin,admin.ModelAdmin):

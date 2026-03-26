@@ -15,7 +15,7 @@ register(Post,filter_fields=["post_type"])
 
 @admin.register(Post)
 class PostAdmin(RawMixin,admin.ModelAdmin):
-  list_display = ('__unicode__','_slug','user','publish_dt','status','post_type')
+  list_display = ('__str__','_slug','user','publish_dt','status','post_type')
   list_editable = ('_slug',)
   list_filter = ('post_type',)
   search_fields = ('content','title')

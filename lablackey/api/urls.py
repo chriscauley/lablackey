@@ -1,5 +1,5 @@
 from django.apps import apps
-from django.conf.urls import url
+from django.urls import re_path
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.test import RequestFactory
@@ -51,6 +51,6 @@ def build_urls():
     for s_name, serializer in d.items():
       kwargs = {'serializer': serializer}
       _url = u'^api/(%s)/(%s)/'%(app.label,s_name)
-      out.append(url(_url+"$",views.list_view,name="api_list_view",kwargs=kwargs))
-      out.append(url(_url+"(\d+)/$",views.detail_view,name="api_detail_view",kwargs=kwargs))
+      out.append(re_path(_url+"$",views.list_view,name="api_list_view",kwargs=kwargs))
+      out.append(re_path(_url+"(\d+)/$",views.detail_view,name="api_detail_view",kwargs=kwargs))
   return out

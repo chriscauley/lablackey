@@ -2,10 +2,10 @@ from django import forms
 from django.contrib import admin
 from django.contrib.admin.sites import site
 from django.contrib.admin.widgets import ManyToManyRawIdWidget, ForeignKeyRawIdWidget
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.forms.widgets import HiddenInput
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_str
 from django.utils.html import escape
 
 class VerboseForeignKeyRawIdWidget(ForeignKeyRawIdWidget):
@@ -29,7 +29,7 @@ class VerboseManyToManyRawIdWidget(ManyToManyRawIdWidget):
     for v in values:
       try:
         obj = self.rel.to._default_manager.using(self.db).get(**{key: v})
-        x = smart_unicode(obj)
+        x = smart_str(obj)
         change_url = reverse(
           "admin:%s_%s_change" % (obj._meta.app_label, obj._meta.object_name.lower()),
           args=(obj.pk,)

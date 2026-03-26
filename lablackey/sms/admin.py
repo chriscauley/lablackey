@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from models import SMSNumber
+from .models import SMSNumber
 
 from lablackey.db.admin import RawMixin
 

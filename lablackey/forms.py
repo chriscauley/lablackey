@@ -1,10 +1,10 @@
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django import forms
 from django.shortcuts import get_object_or_404
 
-from decorators import cached_property
+from .decorators import cached_property
 
 class UserEmailForm(forms.ModelForm):
   class Meta:
@@ -53,11 +53,11 @@ class RequestModelForm(forms.ModelForm):
     return self.instance
   @classmethod
   def user_is_allowed(clss,request,method="GET"):
-    return request.user.is_authenticated() and request.user.is_superuser
+    return request.user.is_authenticated and request.user.is_superuser
   @classmethod
   def get_list_fields(clss,obj):
     return [
-      unicode(obj),
+      str(obj),
     ]
   @classmethod
   def get_instance(clss,request,id=None):
@@ -111,7 +111,7 @@ class RequestUserModelForm(RequestModelForm):
   @classmethod
   def user_is_allowed(clss,request,method):
     # user is always allowed to modify their own data
-    return request.user.is_authenticated()
+    return request.user.is_authenticated
   @classmethod
   def get_instance(clss,request,id=None):
     if not id:

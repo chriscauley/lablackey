@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from django.contrib.sites.requests import RequestSite
 from django.contrib.sites.models import Site
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from lablackey.registration.models import RegistrationProfile
 

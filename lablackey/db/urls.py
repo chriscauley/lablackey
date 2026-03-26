@@ -1,6 +1,7 @@
-from django.conf.urls import url, patterns
+from django.urls import re_path
 
-urlpatterns = patterns(
-  'lablackey.db.views',
-  url('^admin/merge_model/(.*)/(.*)/$','merge_model')
-)
+from . import views
+
+urlpatterns = [
+  re_path('^admin/merge_model/(.*)/(.*)/$',views.merge_model)
+]

@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from loader import load_class
+from .loader import load_class
 import json
 
 PUBLIC_SETTINGS = { s: getattr(settings,s,None) for s in getattr(settings,"PUBLIC_SETTINGS",[]) }

@@ -3,18 +3,18 @@ from django.db.utils import ProgrammingError
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils import timezone
 from django.template.defaultfilters import slugify, date, urlencode
 
-from media.models import PhotosMixin
+from media.models import PhotosMixin  # external dependency
 from lablackey.contenttypes import get_contenttype
 from lablackey.db.models import UserModel, JsonMixin, JsonModel
 from lablackey.decorators import cached_property, cached_method
 from lablackey.geo.models import Room
 
 from dateutil import tz
-import datetime, sys, math, arrow, six, calendar
+import datetime, sys, math, arrow, calendar
 from jsonfield import JSONField
 
 def print_time(t):
@@ -34,7 +34,7 @@ class Access(models.Model):
   _ht = "The CSS class that styles this. Also used for sorting."
   icon = models.CharField(max_length=16,help_text=_ht)
   order = models.IntegerField(default=999)
-  __unicode__ = lambda self: self.name
+  __str__ = lambda self: self.name
   class Meta:
     ordering = ("order",)
 
@@ -44,7 +44,7 @@ class Event(PhotosMixin,JsonModel):
   url = models.CharField(max_length=256,null=True,blank=True)
   _ht = "Optional. Alternative name for the calendar."
   short_name = models.CharField(max_length=64,null=True,blank=True,help_text=_ht)
-  room = models.ForeignKey(Room,null=True,blank=True) #! remove ntbt when you remove location.
+  room = models.ForeignKey(Room,null=True,blank=True,on_delete=models.SET_NULL) #! remove ntbt when you remove location.
   get_room = lambda self: self.room
   description = models.TextField(blank=True,null=True)
   _ht = "If true, this class will not raise conflict warnings for events in the same room."
@@ -55,7 +55,7 @@ class Event(PhotosMixin,JsonModel):
   _ht = "Number of days before event when RSVP is cut off (eg 0.5 means \"You must rsvp 12 hours before this event\")"
   rsvp_cutoff = models.FloatField(default=0,help_text=_ht)
   max_rsvp = models.IntegerField(default=128)
-  access = models.ForeignKey(Access,null=True,blank=True)
+  access = models.ForeignKey(Access,null=True,blank=True,on_delete=models.SET_NULL)
   _ht = "If true, members cannot RSVP unless they have been through the orientation."
   orientation_required = models.BooleanField(default=False,help_text=_ht)
   owner_ids = property(lambda self: list(self.eventowner_set.all().values_list("user_id",flat=True)))
@@ -100,7 +100,7 @@ class Event(PhotosMixin,JsonModel):
 
   get_ics_url = lambda self: reverse_ics(self)
 
-  __unicode__ = lambda self: "%s@%s"%(self.name,self.room)
+  __str__ = lambda self: "%s@%s"%(self.name,self.room)
   class Meta:
     pass
 
@@ -121,20 +121,20 @@ REPEAT_VERBOSE = {
 
 class EventOwner(UserModel):
   user_can_edit = True
-  event = models.ForeignKey(Event)
-  __unicode__ = lambda self: "%s owns %s"%(self.user,self.event)
+  event = models.ForeignKey(Event,on_delete=models.CASCADE)
+  __str__ = lambda self: "%s owns %s"%(self.user,self.event)
 
 class EventRepeat(JsonMixin,models.Model):
-  event = models.ForeignKey(Event)
+  event = models.ForeignKey(Event,on_delete=models.CASCADE)
   repeat_flavor = models.CharField(max_length=16,choices=REPEAT_FLAVOR_CHOICES)
   first_date = models.DateField()
   start_time = models.TimeField()
   end_time = models.TimeField()
 
   monthcalendar = property(lambda s: calendar.monthcalendar(int(s.first_date.year),int(s.first_date.month)))
-  __unicode__ = lambda self: "EventRepeat: %s - %s"%(self.event,self.verbose)
+  __str__ = lambda self: "EventRepeat: %s - %s"%(self.event,self.verbose)
   json_fields = ['event_id','first_date','start_time','end_time','event_name']
-  event_name = property(lambda self: unicode(self.event))
+  event_name = property(lambda self: str(self.event))
   @property
   def month_occurrences(self):
     return self.eventoccurrence_set.filter(start__gte=datetime.datetime.now().replace(day=1,hour=0,minute=0))
@@ -247,7 +247,7 @@ class OccurrenceModel(JsonModel):
   """
   start = models.DateTimeField()
   end_time = models.TimeField()
-  __unicode__ = lambda self: "%s - %s"%(self.name,date(self.start,'l F d, Y'))
+  __str__ = lambda self: "%s - %s"%(self.name,date(self.start,'l F d, Y'))
 
   get_ics_url = lambda self: reverse_ics(self)
 
@@ -288,17 +288,17 @@ class OccurrenceModel(JsonModel):
     abstract = True
 
 class RSVP(models.Model):
-  user = models.ForeignKey(settings.AUTH_USER_MODEL)
-  content_type = models.ForeignKey("contenttypes.ContentType")
+  user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE)
+  content_type = models.ForeignKey("contenttypes.ContentType",on_delete=models.CASCADE)
   object_id = models.IntegerField()
   content_object = GenericForeignKey('content_type', 'object_id')
   emailed = models.DateTimeField(null=True,blank=True)
   quantity = models.IntegerField(default=0)
   get_occurrences = lambda self: [self.content_object]
-  __unicode__ = lambda self: "%s for %s"%(self.user,self.content_object)
+  __str__ = lambda self: "%s for %s"%(self.user,self.content_object)
 
 class EventOccurrence(PhotosMixin,OccurrenceModel):
-  event = models.ForeignKey(Event)
+  event = models.ForeignKey(Event,on_delete=models.CASCADE)
   eventrepeat = models.ForeignKey(EventRepeat,models.SET_NULL,null=True,blank=True) # for when eventrepeat changes
   publish_dt = models.DateTimeField(default=datetime.datetime.now) # for rss feed
   extra = JSONField(default=dict,blank=True)
@@ -352,8 +352,8 @@ class EventOccurrence(PhotosMixin,OccurrenceModel):
     ordering = ('start',)
 
 class CheckInPoint(models.Model):
-  room = models.ForeignKey(Room)
-  __unicode__ = lambda self: "%s"%self.room
+  room = models.ForeignKey(Room,on_delete=models.CASCADE)
+  __str__ = lambda self: "%s"%self.room
   class Meta:
     ordering = ('room__name',)
 
@@ -361,9 +361,9 @@ class CheckIn(UserModel):
   private = True
   datetime = models.DateTimeField(auto_now_add=True)
   object_id = models.IntegerField(null=True,blank=True)
-  content_type = models.ForeignKey("contenttypes.ContentType",null=True,blank=True)
+  content_type = models.ForeignKey("contenttypes.ContentType",null=True,blank=True,on_delete=models.SET_NULL)
   content_object = GenericForeignKey('content_type', 'object_id')
-  checkinpoint = models.ForeignKey(CheckInPoint)
-  __unicode__ = lambda self: "%s @ %s - %s"%(self.user,self.checkinpoint,self.datetime)
+  checkinpoint = models.ForeignKey(CheckInPoint,on_delete=models.CASCADE)
+  __str__ = lambda self: "%s @ %s - %s"%(self.user,self.checkinpoint,self.datetime)
   class Meta:
     ordering = ('-datetime',)

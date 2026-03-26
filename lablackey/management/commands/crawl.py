@@ -17,4 +17,4 @@ class Command(BaseCommand):
     for url in sitemap_urls + settings_urls:
       r = requests.get(url)
       if r.status_code != 200:
-        print r.status_code,"\t",url
+        print(r.status_code,"\t",url)

@@ -1,6 +1,6 @@
 import os, re, datetime, random
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.template.defaultfilters import slugify, striptags
 from django.utils import timezone
@@ -50,7 +50,7 @@ class Post(PhotosMixin,UserModel):
   update_dt = models.DateTimeField(auto_now=True)
   _h = "Featured blogs must have a photo or they won't appear at all."
   featured = models.BooleanField(default=False,help_text=_h)
-  photo = models.ForeignKey(Photo,null=True,blank=True)
+  photo = models.ForeignKey(Photo,null=True,blank=True,on_delete=models.SET_NULL)
   description = property(lambda self: explosivo(self.content))
   lite_fields = ['title', 'photo_url', 'id', 'publish_dt', 'extra']
   json_fields = ['title','template','content','short_content','publish_dt','post_type','subtitle','extra','photo_url']
@@ -63,7 +63,7 @@ class Post(PhotosMixin,UserModel):
 
   class Meta:
     ordering = ('-featured','-publish_dt',)
-  __unicode__ = lambda self: self.title or 'Untitled'
+  __str__ = lambda self: self.title or 'Untitled'
 
   def save(self, *args, **kwargs):
     self._slug = slugify(self._slug or "")
@@ -76,7 +76,7 @@ class Post(PhotosMixin,UserModel):
       image = settings.SITE_URL + image
     return {
       'description': self.get_short_content(),
-      'title': unicode(self),
+      'title': str(self),
       'image': image,
     }
   #depracate please
@@ -87,7 +87,7 @@ class Post(PhotosMixin,UserModel):
   @classmethod
   def get_api_kwargs(cls,request):
     q = models.Q(status='published',publish_dt__lte=timezone.now())
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
       q = models.Q(status='published',publish_dt__lte=timezone.now()) | models.Q(user=request.user)
       if request.user.is_superuser:
         q = models.Q()
@@ -98,7 +98,7 @@ class PressItem(models.Model):
   title = models.CharField(max_length=64)
   url = models.URLField(max_length=256)
   publish_dt = models.DateField("Date")
-  __unicode__ = lambda self: self.title
+  __str__ = lambda self: self.title
   class Meta:
     ordering = ('-publish_dt',)
 
@@ -125,7 +125,7 @@ class Banner(models.Model):
   url = models.CharField(max_length=200)
   weight = models.IntegerField(choices=WEIGHT_CHOICES)
   objects = BannerManager()
-  __unicode__ = lambda self: self.name
+  __str__ = lambda self: self.name
   def save(self,*args,**kwargs):
     self.end_date = self.end_date or datetime.date(2099,1,1)
     super(Banner,self).save(*args,**kwargs)

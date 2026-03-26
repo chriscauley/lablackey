@@ -8,7 +8,7 @@ from lablackey.db.models import JsonModel
 
 from jsonfield import JSONField
 import json
-import urllib
+from urllib.parse import quote as urllib_quote
 
 try:
   import ezdxf
@@ -33,7 +33,7 @@ class GeoModel(JsonModel):
 class City(GeoModel):
   name = models.CharField(max_length=128)
   state = USStateField()
-  def __unicode__(self):
+  def __str__(self):
     return "%s, %s"%(self.name,self.state)
   class Meta:
     ordering = ('name',)
@@ -41,18 +41,18 @@ class City(GeoModel):
 
 class Location(GeoModel):
   name = models.CharField(max_length=128,null=True,blank=True)
-  parent = models.ForeignKey("self",null=True,blank=True)
+  parent = models.ForeignKey("self",null=True,blank=True,on_delete=models.SET_NULL)
   _ht = "Optional. Alternative name for the calendar."
   short_name = models.CharField(max_length=64,null=True,blank=True,help_text=_ht)
   get_short_name = lambda self: self.short_name or self.name
   _short_name = property(get_short_name)
   address = models.CharField(max_length=64,null=True,blank=True)
   address2 = models.CharField(max_length=64,null=True,blank=True)
-  city = models.ForeignKey(City,default=1)
+  city = models.ForeignKey(City,default=1,on_delete=models.CASCADE)
   zip_code = models.IntegerField(default=77007)
   extra = JSONField(default=dict,blank=True)
   dxf = models.FileField(upload_to="floorplans",null=True,blank=True)
-  __unicode__ = lambda self: self.name
+  __str__ = lambda self: self.name
   city_name = property(lambda self: self.city.name)
   state = property(lambda self: self.city.state)
   def save(self,*args,**kwargs):
@@ -83,14 +83,14 @@ class Location(GeoModel):
     ordering = ('name',)
 
   def print_address(self):
-    l = [self.name,self.address,self.address2,self.city.__unicode__(),self.zip_code]
+    l = [self.name,self.address,self.address2,str(self.city),self.zip_code]
     return '\n'.join([str(li) for li in l if li])
 
 class RoomGroup(models.Model):
   name = models.CharField(max_length=16)
   color = models.CharField(max_length=32)
-  fill = models.ForeignKey('media.Photo',null=True,blank=True)
-  __unicode__ = lambda self: self.name
+  fill = models.ForeignKey('media.Photo',null=True,blank=True,on_delete=models.SET_NULL)
+  __str__ = lambda self: self.name
   @property
   def as_json(self):
     return {
@@ -101,18 +101,18 @@ class RoomGroup(models.Model):
 
 class Room(models.Model):
   name = models.CharField(max_length=128,null=True,blank=True)
-  location = models.ForeignKey(Location)
+  location = models.ForeignKey(Location,on_delete=models.CASCADE)
   _ht = "Optional. Alternative name for the calendar."
   short_name = models.CharField(max_length=64,null=True,blank=True,help_text=_ht)
   get_short_name = lambda self: self.short_name or self.name
   in_calendar = models.BooleanField("can be scheduled for events",default=True)
   has_checkoutitems = models.BooleanField(default=False)
-  roomgroup = models.ForeignKey(RoomGroup,null=True,blank=True)
+  roomgroup = models.ForeignKey(RoomGroup,null=True,blank=True,on_delete=models.SET_NULL)
   map_key = models.CharField(max_length=1,null=True,blank=True)
   def get_map_link(self):
     location = self.location
     lines = [location.name,location.address,location.city.name,location.city.state]
-    return "http://maps.google.com/?q="+urllib.quote(", ".join([unicode(l) for l in lines if l]))
+    return "http://maps.google.com/?q="+urllib_quote(", ".join([str(l) for l in lines if l]))
   @property
   def as_json(self):
     return {
@@ -124,7 +124,7 @@ class Room(models.Model):
       'map_key': self.map_key,
       'map_link': self.get_map_link(),
     }
-  __unicode__ = lambda self: "%s"%(self.name or self.location)
+  __str__ = lambda self: "%s"%(self.name or self.location)
   class Meta:
     ordering = ('name',)
     unique_together = ('name','location')
@@ -132,8 +132,8 @@ class Room(models.Model):
 class DXFEntity(models.Model):
   points = models.TextField()
   dxftype = models.CharField(max_length=16)
-  room = models.ForeignKey(Room,null=True,blank=True)
-  __unicode__ = lambda self: "%s #%s (%s)"%(self.dxftype,self.id,self.room)
+  room = models.ForeignKey(Room,null=True,blank=True,on_delete=models.SET_NULL)
+  __str__ = lambda self: "%s #%s (%s)"%(self.dxftype,self.id,self.room)
   @property
   def as_json(self):
     return {

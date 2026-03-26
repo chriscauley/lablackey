@@ -8,7 +8,8 @@ from hashlib import md5
 from django import template
 from django.template.defaultfilters import striptags
 from django.utils.safestring import mark_safe
-from settings import MEDIA_ROOT
+from django.conf import settings
+MEDIA_ROOT = settings.MEDIA_ROOT
 
 from .syntax_color import _colorize_table
 

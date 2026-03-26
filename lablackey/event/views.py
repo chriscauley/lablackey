@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .utils import make_ics,ics2response
 from .models import Event, EventOccurrence, RSVP, CheckIn, EventRepeat
 from lablackey.geo.models import Room, Location
-from lablackey.loader import load_class
+from lablackey.loader import load_class  # noqa
 
 import datetime, json, arrow, calendar
 
@@ -33,7 +33,7 @@ def index(request,daystring=None):
     start = datetime.datetime.strptime(daystring,'%Y-%m-%d').date()
     dt = start - datetime.date.today()
     if dt.days < -770 or dt.days > 365:
-      print "DDoS: %s || %s"%(request.META['HTTP_USER_AGENT'],request.META['REMOTE_ADDR'])
+      print("DDoS: %s || %s"%(request.META['HTTP_USER_AGENT'],request.META['REMOTE_ADDR']))
       raise Http404("You have selected a date too far in the future or past.")
   end = start+datetime.timedelta(7)
   year = start.year
@@ -78,7 +78,7 @@ def detail(request,event_id,slug=None):
   # NOTE: ze slug does notzing!
   event = get_object_or_404(Event,id=event_id)
   user_rsvps = None
-  if request.user.is_authenticated():
+  if request.user.is_authenticated:
     user_rsvps = event.get_user_rsvps(request.user)
   values = {
     'event': event,

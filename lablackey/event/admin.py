@@ -2,9 +2,9 @@ from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.contenttypes.models import ContentType
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms.models import BaseInlineFormSet
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .models import Event, EventRepeat, EventOccurrence, RSVP, CheckIn, CheckInPoint, Access, EventOwner
 from .utils import get_room_conflicts
@@ -80,10 +80,10 @@ class EventRepeatInline(admin.TabularInline):
   readonly_fields = ['_verbose',]
   extra = 0
   def _verbose(self,obj):
+    from django.utils.html import format_html
     if obj.repeat_flavor == "custom":
-      return "<a href='/event/bulk/?eventrepeat_id=%s' class='fa fa-edit'></a>"%obj.id
+      return format_html("<a href='/event/bulk/?eventrepeat_id={}' class='fa fa-edit'></a>",obj.id)
     return obj.verbose
-  _verbose.allow_tags = True
 
 class EventOwnerInline(admin.TabularInline):
   raw_id_fields = ['user']
@@ -92,20 +92,20 @@ class EventOwnerInline(admin.TabularInline):
 
 @admin.register(Event)
 class EventAdmin(TaggedPhotoAdmin):
-  list_display = ("__unicode__","upcoming_count","organizers","get_repeat_verbose","access","allow_rsvp","rsvp_cutoff")
+  list_display = ("__str__","upcoming_count","organizers","get_repeat_verbose","access","allow_rsvp","rsvp_cutoff")
   list_editable = ("access","allow_rsvp","rsvp_cutoff")
   list_filter = ("allow_rsvp","access")
   list_per_page = 200
   inlines = [EventRepeatInline,EventOwnerInline,EventOccurrenceInline]
   search_fields = ['name']
   def organizers(self,obj):
-    return "<br />".join(["%s"%eo.user for eo in obj.eventowner_set.all()])
-  organizers.allow_tags = True
+    from django.utils.html import format_html
+    return format_html("<br />".join(["%s"%eo.user for eo in obj.eventowner_set.all()]))
   def upcoming_count(self,obj):
     return obj.upcoming_occurrences.count()
   def get_repeat_verbose(self,obj):
-    return "<br/>".join([er.verbose for er in obj.eventrepeat_set.all()])
-  get_repeat_verbose.allow_tags = True
+    from django.utils.html import format_html
+    return format_html("<br/>".join([er.verbose for er in obj.eventrepeat_set.all()]))
 
 @admin.register(EventOccurrence)
 class EventOccurrenceAdmin(TaggedPhotoAdmin):
@@ -113,7 +113,7 @@ class EventOccurrenceAdmin(TaggedPhotoAdmin):
   raw_id_fields = ['event']
   list_filter = (FuturePastListFilter,)
   readonly_fields = ['_rsvps','eventrepeat']
-  list_display = ("__unicode__","start","end_time")
+  list_display = ("__str__","start","end_time")
   list_editable = ("start","end_time")
   def _rsvps(self,obj):
     rsvps = RSVP.objects.filter(
@@ -121,19 +121,18 @@ class EventOccurrenceAdmin(TaggedPhotoAdmin):
       content_type__model=obj._meta.model_name,
       content_type__app_label=obj._meta.app_label
     )
+    from django.utils.html import format_html
     s = '<a href="/admin/event/rsvp/{r.id}">{r}</a>'
-    return '<br/>'.join([s.format(**{'r': r}) for r in rsvps])
-  _rsvps.allow_tags = True
+    return format_html('<br/>'.join([s.format(**{'r': r}) for r in rsvps]))
 
 @admin.register(RSVP)
 class RSVPAdmin(admin.ModelAdmin):
-  list_display = ['__unicode__','user_link']
+  list_display = ['__str__','user_link']
   raw_id_fields = ['user']
   def user_link(self,obj):
     u = obj.user
-    html = '<a href="/admin/user/user/{}/" class="fa fa-user"> {} {} ({})</a>'
-    return html.format(u.id,u.first_name, u.last_name, u.username)
-  user_link.allow_tags = True
+    from django.utils.html import format_html
+    return format_html('<a href="/admin/user/user/{}/" class="fa fa-user"> {} {} ({})</a>',u.id,u.first_name, u.last_name, u.username)
 
 @admin.register(Access)
 class AccessAdmin(admin.ModelAdmin):

@@ -2,10 +2,10 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.sites.models import Site
 from django.contrib.sites.requests import RequestSite
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django import forms
 from django.http import HttpRequest
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .models import RegistrationProfile
 
